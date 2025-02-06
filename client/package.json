@@ -17,7 +17,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "@tailwindcss/vite": "^4.0.3",
+    "@unhead/vue": "^1.11.18",
+    "particles.js": "^2.0.0",
+    "tailwindcss": "^4.0.3",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
@@ -27,6 +32,7 @@
     "@vue/eslint-config-typescript": "^14.3.0",
     "@vue/tsconfig": "^0.7.0",
     "cypress": "^14.0.0",
+    "daisyui": "^4.12.23",
     "eslint": "^9.18.0",
     "eslint-plugin-cypress": "^4.1.0",
     "eslint-plugin-vue": "^9.32.0",

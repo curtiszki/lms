@@ -1,6 +1,13 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
-import App from './App.vue'
+import { createHead } from '@unhead/vue'
 
-createApp(App).mount('#app')
+import App from '@/App.vue'
+import router from '@/router/index'
+
+const app = createApp(App)
+
+app.use(router)
+const head = createHead()
+app.use(head)
+
+app.mount('#app')
