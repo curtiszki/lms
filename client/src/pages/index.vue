@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import {useHead} from '@unhead/vue'
+//import {useHead} from '@unhead/vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import HeroWelcome from '@/components/HeroWelcome.vue';
 
@@ -9,7 +9,7 @@ const darkHeroBg = {
     lg: 'images/dark-hero/large.jpg',
     xl: 'images/dark-hero/xl.jpg'
 }
-
+    /*
     useHead({
         title: 'IPJ',
         meta: [
@@ -25,6 +25,7 @@ const darkHeroBg = {
             }
         ]
     })
+    */
 </script>
 
 <template>
@@ -38,11 +39,8 @@ const darkHeroBg = {
             </div>
             <HeroWelcome
                 heading="How do you do?"
+                description="Here's a sample description. Blah blah blah blah blah blah blah."
             ></HeroWelcome>
         </div>
     </AppLayout>
 </template>
-
-<style scoped>
-   
-</style>

@@ -1,10 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
-    <div>
-        <slot></slot>
-    </div>
+    <slot></slot>
 </template>
-
-<style scoped>
-</style>
