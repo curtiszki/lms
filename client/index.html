@@ -1,13 +1,58 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Learning Management System</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        min-width: 100vw;
+        min-height: 100vh;
+      }
+      #id {
+        display: none;
+        opacity: 0;
+      }
+      #loading {
+        position: absolute;
+        display: grid;
+        align-items: center;
+        vertical-align: middle;
+        justify-content: center;
+        left: 0%;
+        top: 0%;
+        min-width: 100vw;
+        min-height: 100vh;
+        background-color: black;
+        color:aquamarine;
+        z-index: 100;
+      }
+      
+      [v-cloak] {
+        display: none;
+      }
+
+      #app:not([v-cloak]) + #loading {
+        display: none;
+      }
+    </style>
+    <link rel="stylesheet" href="src/assets/loading-spinner.css">
   </head>
   <body>
-    <div id="app"></div>
+    <noscript>
+      <strong>JavaScript is required for this website.</strong>
+    </noscript>
+    <div id="app" v-cloak></div>
+    <div id="loading" class="transition-opacity opacity-1 duration-500">
+      <div class="mul5">
+          <div class="mul5circle1"></div>
+          <div class="mul5circle2"></div>
+          <div class="mul5circle3"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

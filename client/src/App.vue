@@ -1,9 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+</script>
 
 <template>
   <RouterView/>
 </template>
 
-<style scoped>
+<style>
+/*
 @import url("@/assets/main.css");
+*/
 </style>
