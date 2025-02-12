@@ -3,10 +3,8 @@
 </script>
 
 <template>
-    <div class="flex flex-row">
+    <div class="flex flex-col w-full items-center text-center justify-center gap-8">
         <StickyNav class="sticky top-0"></StickyNav>
-        <div class="w-full box-content mx-2 ml-4 my-5">
-            <slot></slot>
-        </div>
+        <slot></slot>
     </div>
 </template>
