@@ -14,7 +14,4 @@ runs:
       
     - name: Install dependencies and test
       shell: bash
-      run: |
-           npm ci
-           npm run build --if-present
-           npm run test:unit
+      run:  cd ${{github.action_path}} && npm ci && npm run build --if-present && npm run test:unit
