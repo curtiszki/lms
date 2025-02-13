@@ -6,35 +6,146 @@ const { parseData = false } = defineProps<{
 }>()
 
 import { ref } from 'vue';
-const error = ref(false);
+const error = ref(true);
+const errorMsg = ref('');
 
-const verifyFileType = function (e: Event) : void {
-    const target = e?.target as HTMLInputElement
-    
+const reader = new FileReader();
+
+const verifyFileType = async function (e: Event) : Promise<void> {
+    const target = e?.target as HTMLInputElement    
     error.value = false;
+    errorMsg.value = '';
     if (target && target.files?.length) {
-        const filename = target.files[0].name;
+        const file = target.files[0];
+        const filename = file.name;
         const extension = filename.substring(filename.lastIndexOf('.')+1, filename.length) || filename
-        console.log(extension);
-        error.value = ['csv', 'tsv'].indexOf(extension) == -1;
+        
+        if (['tsv', 'csv'].indexOf(extension) == -1) {
+            errorMsg.value = 'Unsupported datatype';
+            return;
+        }
+        
+        reader.readAsText(new Blob(
+            [file],
+            {"type": file.type}
+        ))
+
+        await new Promise(resolve => {
+            reader.onloadend = (event: ProgressEvent<FileReader>) => {
+                if (event.target) {
+                    resolve(event.target.result)
+                }
+            }
+        })
+        
+        const greh = (reader.result ? reader.result.toString() : '');
+        console.log('geh\n', greh);
+        let res = null;
+        switch(extension) {
+            case 'csv':
+                res = csvParse(greh);
+                console.log("csv");
+                console.log(res);
+            break;
+            case 'tsv':
+                res = tsvParse(greh);
+                console.log("tsv");
+                console.log(res);
+                break;
+            default:
+                errorMsg.value ='Unable to parse datatype';
+                return;
+        }
+    }
+    }
+
+    /*
+    reader.onloadend = () => {
+    const url = reader.result;
+    reader.
+    case 'csv':
+        res = csvParse(res);
+        console.log("csv");
+        console.log(res);
+        break;
+    case 'tsv':
+        res = tsvParse(reader.result);
+        console.log("tsv");
+        console.log(res);
+        break;
+    default:
+        errorMsg.value ='Unable to parse datatype';
+        return;
     }
 }
+    */
+/*
+        let res = reader.result?.toString();
+        switch (extension) {
+        case 'csv':
+            res = csvParse(res);
+            console.log("csv");
+            console.log(res);
+            break;
+        case 'tsv':
+            res = tsvParse(reader.result);
+            console.log("tsv");
+            console.log(res);
+            break;
+        default:
+            errorMsg.value ='Unable to parse datatype';
+            return;
+        }
 
-import {csv, tsv} from 'd3'
-const parseUploadedFile = function() : boolean {
-    return true;
+const parseUploadedFile = function() : void {
+    const fileObj = retrieveFileExtension(inputRef.value);
+    console.log("Called parse uploaded file??");
+    console.log(fileObj);
+    let res = null;
+    
+    const reader = new FileReader();
+    reader.readAsText(fileObj?.file);
+    switch (fileObj?.extension) {
+        case 'csv':
+            res = csvParse(fileObj.file.name);
+            console.log("csv");
+            console.log(res);
+            break;
+        case 'tsv':
+            res = tsvParse(fileObj.file.name);
+            console.log("tsv");
+            console.log(res);
+            break;
+        default:
+            errorMsg.value ='Unable to parse datatype';
+            break;
+    }
 }
+*/
 </script>
 
 <template>
-    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
-    <p class="mt-1 text-sm text-gray-500 dark:text-gray-300" id="file_input_help">{{ description }}</p>
-    <input
-        :accept="accepts"
-        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
-        aria-describedby="file_input_help" id="file_input" type="file"
-        v-on:change="verifyFileType"
-        >
-    <p class="text-red-500 text-sm italic" v-show="error.valueOf()">File type not accepted.</p>
-    <button v-if="parseData" v-on:click="parseUploadedFile">Parse Content</button>
+    <div class="flex flex-col gap-5">
+        <label class="block text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
+        <p class="text-sm text-gray-500 dark:text-gray-300" id="file_input_help">{{ description }}</p>
+        <input
+            :accept="accepts"
+            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
+            aria-describedby="file_input_help" ref="file_input" type="file"
+            v-on:change="verifyFileType"
+            >
+        <p class="text-red-500 text-sm italic" v-show="error.valueOf()">{{ errorMsg }}</p>
+        <button v-if="parseData" v-on:click="parseUploadedFile" 
+        class="bg-orange-700 p-2 rounded-lg hover:cursor-not-allowed w-fit transition-colors"
+        :class="{'submittable': (!error.valueOf()) }">
+        Parse Content</button>
+    </div>
 </template>
+
+<style lang="css">
+    @reference "tailwindcss";
+
+    .submittable {
+        @apply bg-teal-600 max-h-full hover:cursor-pointer
+    }
+</style>
