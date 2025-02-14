@@ -39,9 +39,9 @@ const NavItems = [
 </script>
 
 <template>
-    <section id="sticky-nav" class="w-[100vw] h-fit">
-        <nav class="flex flex-row align-center justify-center gap-0 px-6 items-center align-middle w-full">
-            <RouterLink v-for="item in NavItems" :to="item.link" class="relative inline-block px-5 text-center py-[4px] hover:bg-slate-900/95">
+    <section id="sticky-nav" class="w-full h-fit box-border px-6">
+        <nav class="flex flex-row align-center justify-center gap-y-0 items-center align-middle">
+            <RouterLink v-for="item in NavItems" :key="item.link" :to="item.link" class="relative inline-block px-5 text-center py-[4px] hover:bg-slate-900/95">
                 <component :is="item.icon" class="fill-slate-700 w-8 mx-auto my-[4px]"></component>
                 <p class="text-sm"> {{ item.title }}</p>
             </RouterLink>
