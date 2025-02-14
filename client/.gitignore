@@ -29,4 +29,4 @@ coverage
 
 *.tsbuildinfo
 
-src/api/config.js
+src/api/

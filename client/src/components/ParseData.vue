@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { notificationTypes, inputTypes } from './types/types';
+
 const {} = defineProps<{
   accepts: string,
   description: string,
+  verifyType: inputTypes
 }>()
 
 import { ref } from 'vue';
@@ -10,71 +13,106 @@ const errorMsg = ref('');
 
 
 const notificationMsg = ref("");
-
-enum notificationTypes {
-    NONE="none",
-    SUCCESS="success",
-    WAITING="waiting"
-}
-
 const notificationType = ref(notificationTypes.NONE);
-
-const reader = new FileReader();
 
 import {csvParseRows, tsvParseRows} from 'd3';
 
-const verifyFileType = async function (e: Event) : Promise<void> {
+const verifyFileType = async function (e:Event, type : inputTypes) : Promise<void> {
     const target = e?.target as HTMLInputElement    
     error.value = false;
     errorMsg.value = '';
+    notificationType.value = notificationTypes.NONE;
+    
     if (target && target.files?.length) {
         const file = target.files[0];
         const filename = file.name;
         const extension = filename.substring(filename.lastIndexOf('.')+1, filename.length) || filename
         
-        if (['tsv', 'csv'].indexOf(extension) == -1) {
-            errorMsg.value = 'Unsupported datatype';
+        if (type === inputTypes.DSV) {
+            verifyDsv(file, extension);
+        }
+        else if (type === inputTypes.TEXT) {
+            verifyText(file, extension);
+        }
+        else {
+            error.value = true;
+            errorMsg.value = 'Unable to process selected input type. No supporting function.'
             return;
         }
+    }
+}
 
-        reader.readAsText(new Blob(
-            [file],
-            {"type": file.type}
-        ))
+const verifyText = async function(file: File, extension: string) : Promise<void> {
+    if (extension != 'txt') {
+        errorMsg.value = 'Unsupported datatype';
+        error.value = true;
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.readAsText(new Blob(
+        [file],
+        {"type": file.type}
+    ))
 
-        await new Promise(resolve => {
-            reader.onloadend = (event: ProgressEvent<FileReader>) => {
-                if (event.target) {
-                    resolve(event.target.result)
-                }
+    await new Promise(resolve => {
+        reader.onloadend = (event: ProgressEvent<FileReader>) => {
+            if (event.target) {
+                resolve(event.target.result)
             }
-        })
-        
-        const fileString = (reader.result ? reader.result.toString() : '');
-        let res = null;
-
-        switch(extension) {
-            case 'csv': 
-                res = csvParseRows(fileString);
-                break;
-            case 'tsv':
-                res = tsvParseRows(fileString);
-                break;
-            default:
-                errorMsg.value ='Unable to parse datatype';
-                return;
         }
+    })
 
-        if (!res) {
-            errorMsg.value ="Something went wrong parsing the file";
+    const res = reader.result ? reader.result.toString() : '';
+
+    notificationType.value = notificationTypes.SUCCESS;
+    notificationMsg.value = res;
+}
+
+const verifyDsv = async function(file : File, extension : string) : Promise<void> {
+    if (['tsv', 'csv'].indexOf(extension) == -1) {
+        error.value = true;
+        errorMsg.value = 'Unsupported datatype';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsText(new Blob(
+        [file],
+        {"type": file.type}
+    ))
+
+    await new Promise(resolve => {
+        reader.onloadend = (event: ProgressEvent<FileReader>) => {
+            if (event.target) {
+                resolve(event.target.result)
+            }
+        }
+    })
+    
+    const fileString = (reader.result ? reader.result.toString() : '');
+    let res = null;
+
+    switch(extension) {
+        case 'csv': 
+            res = csvParseRows(fileString);
+            break;
+        case 'tsv':
+            res = tsvParseRows(fileString);
+            break;
+        default:
+            errorMsg.value ='Unable to parse datatype';
             return;
-        }
-
-        notificationMsg.value = "Generated dataset of " + res.length + " items";
-        notificationType.value = notificationTypes.SUCCESS;
-
     }
+
+    if (!res) {
+        errorMsg.value ="Something went wrong parsing the file";
+        return;
     }
+
+    notificationMsg.value = "Generated dataset of " + res.length + " items";
+    notificationType.value = notificationTypes.SUCCESS;
+}
 </script>
 
 <template>
@@ -85,7 +123,7 @@ const verifyFileType = async function (e: Event) : Promise<void> {
             :accept="accepts"
             class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
             aria-describedby="file_input_help" type="file"
-            v-on:change="verifyFileType"
+            v-on:change="verifyFileType($event, verifyType)"
             >
         <div :class="notificationType">{{notificationMsg}}</div>
         <p class="text-red-500 text-sm italic" v-show="error.valueOf()">{{ errorMsg }}</p>

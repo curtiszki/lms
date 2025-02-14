@@ -4,6 +4,7 @@
     import LargeTitle from '@/components/LargeTitle.vue';
     import ParseData from '@/components/ParseData.vue';
     import TextGenerate from '@/components/TextGenerate.vue';
+    import { inputTypes } from '@/components/types/types';
 </script>
 
 <template>
@@ -14,7 +15,7 @@
             <p>You wanna do something??</p>
             <p>Conditionally display the number of remaining things to study.</p>
             <br>
-            <ParseData accepts=".tsv,.csv" description="If you have an appropriately formatted file (comma-separated file or tab-separated file),
+            <ParseData :verifyType="inputTypes.DSV" accepts=".tsv,.csv" description="If you have an appropriately formatted file (comma-separated file or tab-separated file),
                 you can import them to generate new flashcard datasets. (TSV or CSV. Tab-separated values or comma-separated value files only.)"
                 :parseData=true></ParseData>
         </Tile>
