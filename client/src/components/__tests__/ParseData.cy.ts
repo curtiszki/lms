@@ -1,6 +1,6 @@
 // Test for csv, tsv
 import ParseData from "../ParseData.vue"
-import { inputTypes, notificationTypes } from "../types/types"
+import { inputTypes, notificationTypes } from "../defines/types"
 
 describe('ParseInput', () => {
 

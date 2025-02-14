@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { notificationTypes, inputTypes } from './types/types';
+import { notificationTypes, inputTypes } from './defines/types';
+import { sizeLimits } from './defines/constants';
 
 const {} = defineProps<{
   accepts: string,
   description: string,
-  verifyType: inputTypes
+  verifyType: inputTypes,
 }>()
 
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
 
 const notificationMsg = ref("");
 const notificationType = ref(notificationTypes.NONE);
+const emit = defineEmits(['load']);
 
 import {csvParseRows, tsvParseRows} from 'd3';
 
@@ -20,6 +22,7 @@ const verifyFileType = async function (e:Event, type : inputTypes) : Promise<voi
     
     if (target && target.files?.length) {
         const file = target.files[0];
+
         const filename = file.name;
         const extension = filename.substring(filename.lastIndexOf('.')+1, filename.length) || filename
         
@@ -43,7 +46,13 @@ const verifyText = async function(file: File, extension: string) : Promise<void>
         notificationType.value = notificationTypes.FAILURE;
         return;
     }
-    
+
+    if (file.size > sizeLimits.text) {
+        notificationMsg.value = `Input file is too long. (Max ${sizeLimits.text} characters).`
+        notificationType.value = notificationTypes.FAILURE;
+        return;
+    } 
+
     const reader = new FileReader();
     reader.readAsText(new Blob(
         [file],
@@ -61,7 +70,8 @@ const verifyText = async function(file: File, extension: string) : Promise<void>
     const res = reader.result ? reader.result.toString() : '';
 
     notificationType.value = notificationTypes.SUCCESS;
-    notificationMsg.value = res;
+    notificationMsg.value = '';
+    emit('load', res);
 }
 
 const verifyDsv = async function(file : File, extension : string) : Promise<void> {
@@ -70,6 +80,12 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
         notificationType.value = notificationTypes.FAILURE;
         return;
     }
+
+    if (file.size > sizeLimits.dsv) {
+        notificationMsg.value = `Input file is too long. (Max ${sizeLimits.dsv} characters).`
+        notificationType.value = notificationTypes.FAILURE;
+        return;
+    } 
 
     const reader = new FileReader();
     reader.readAsText(new Blob(
@@ -123,12 +139,6 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
             v-on:change="verifyFileType($event, verifyType)"
             >
         <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
-        <!--
-        <button v-if="parseData" v-on:click="parseUploadedFile" 
-        class="bg-orange-700 p-2 rounded-lg hover:cursor-not-allowed w-fit transition-colors"
-        :class="{'submittable': (!error.valueOf()) }">
-        Parse Content</button>
-        -->
     </div>
 </template>
 

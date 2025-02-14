@@ -4,7 +4,7 @@
     import LargeTitle from '@/components/LargeTitle.vue';
     import ParseData from '@/components/ParseData.vue';
     import TextGenerate from '@/components/TextGenerate.vue';
-    import { inputTypes } from '@/components/types/types';
+    import { inputTypes } from '@/components/defines/types';
 </script>
 
 <template>
