@@ -1,4 +1,4 @@
-import pluginVue from 'eslint-plugin-vue'
+import pluginVue, { rules } from 'eslint-plugin-vue'
 import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -33,4 +33,10 @@ export default defineConfigWithVueTs(
     ],
   },
   skipFormatting,
+  {
+    rules: {
+      'multi-word-component-names': 'off'
+    }
+  },
+
 )

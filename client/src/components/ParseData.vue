@@ -8,9 +8,6 @@ const {} = defineProps<{
 }>()
 
 import { ref } from 'vue';
-const error = ref(true);
-const errorMsg = ref('');
-
 
 const notificationMsg = ref("");
 const notificationType = ref(notificationTypes.NONE);
@@ -19,9 +16,7 @@ import {csvParseRows, tsvParseRows} from 'd3';
 
 const verifyFileType = async function (e:Event, type : inputTypes) : Promise<void> {
     const target = e?.target as HTMLInputElement    
-    error.value = false;
-    errorMsg.value = '';
-    notificationType.value = notificationTypes.NONE;
+    notificationType.value = notificationTypes.WAITING;
     
     if (target && target.files?.length) {
         const file = target.files[0];
@@ -35,8 +30,8 @@ const verifyFileType = async function (e:Event, type : inputTypes) : Promise<voi
             verifyText(file, extension);
         }
         else {
-            error.value = true;
-            errorMsg.value = 'Unable to process selected input type. No supporting function.'
+            notificationMsg.value = 'Unable to process selected input type. No supporting function.'
+            notificationType.value = notificationTypes.FAILURE;
             return;
         }
     }
@@ -44,8 +39,8 @@ const verifyFileType = async function (e:Event, type : inputTypes) : Promise<voi
 
 const verifyText = async function(file: File, extension: string) : Promise<void> {
     if (extension != 'txt') {
-        errorMsg.value = 'Unsupported datatype';
-        error.value = true;
+        notificationMsg.value = 'Unsupported datatype';
+        notificationType.value = notificationTypes.FAILURE;
         return;
     }
     
@@ -71,8 +66,8 @@ const verifyText = async function(file: File, extension: string) : Promise<void>
 
 const verifyDsv = async function(file : File, extension : string) : Promise<void> {
     if (['tsv', 'csv'].indexOf(extension) == -1) {
-        error.value = true;
-        errorMsg.value = 'Unsupported datatype';
+        notificationMsg.value = 'Unsupported datatype';
+        notificationType.value = notificationTypes.FAILURE;
         return;
     }
 
@@ -101,12 +96,14 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
             res = tsvParseRows(fileString);
             break;
         default:
-            errorMsg.value ='Unable to parse datatype';
+            notificationMsg.value ='Unable to parse datatype';
+            notificationType.value = notificationTypes.FAILURE;
             return;
     }
 
     if (!res) {
-        errorMsg.value ="Something went wrong parsing the file";
+        notificationMsg.value ="Something went wrong parsing the file";
+        notificationType.value = notificationTypes.FAILURE;
         return;
     }
 
@@ -125,8 +122,7 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
             aria-describedby="file_input_help" type="file"
             v-on:change="verifyFileType($event, verifyType)"
             >
-        <div :class="notificationType">{{notificationMsg}}</div>
-        <p class="text-red-500 text-sm italic" v-show="error.valueOf()">{{ errorMsg }}</p>
+        <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
         <!--
         <button v-if="parseData" v-on:click="parseUploadedFile" 
         class="bg-orange-700 p-2 rounded-lg hover:cursor-not-allowed w-fit transition-colors"
@@ -144,6 +140,10 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
     }
 
     .success {
-        @apply bg-green-400 border-2 border-green-800 text-black
+        @apply text-green-500
+    }
+
+    .failure {
+        @apply text-red-500
     }
 </style>

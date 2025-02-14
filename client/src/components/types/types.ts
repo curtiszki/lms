@@ -1,7 +1,8 @@
 export enum notificationTypes {
     NONE="none",
     SUCCESS="success",
-    WAITING="waiting"
+    WAITING="waiting",
+    FAILURE="failure"
 }
 
 export enum generationTypes {
