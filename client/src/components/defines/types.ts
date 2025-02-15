@@ -5,10 +5,15 @@ export enum notificationTypes {
     FAILURE="failure"
 }
 
-export enum generationTypes {
-    FLASHCARD="Flashcards",
-    MULTIPLE_CHOICE="Multiple Choice",
-    EXAM="Exam"
+export enum GenerationTypes {
+    FLASHCARD="flashcards",
+    MULTIPLE_CHOICE="multiple Choice",
+    EXAM="exam"
+}
+
+export enum InformationTypes {
+    SUBJECT="subject",
+    RAW_TEXT="information"
 }
 
 export enum inputTypes {

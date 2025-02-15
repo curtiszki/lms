@@ -5,7 +5,7 @@ defineProps<{
 </script>
 
 <template>
-    <div class="bg-gray-600/35 rounded-sm px-4 py-3 w-full max-w-[1080px] flex flex-col gap-3">
+    <div class="bg-gray-600/35 rounded-sm px-4 py-6 w-full max-w-[1080px] flex flex-col gap-3">
         <h4 v-if="title"
             class="font-bold text-lg relative"
         >{{ title }}

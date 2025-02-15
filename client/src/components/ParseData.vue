@@ -8,7 +8,7 @@ const {} = defineProps<{
   verifyType: inputTypes,
 }>()
 
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 
 const notificationMsg = ref("");
 const notificationType = ref(notificationTypes.NONE);

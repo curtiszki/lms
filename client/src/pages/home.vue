@@ -19,9 +19,6 @@
                 you can import them to generate new flashcard datasets. (TSV or CSV. Tab-separated values or comma-separated value files only.)"
                 :parseData=true></ParseData>
         </Tile>
-        <Tile title="Subjects">
-            <p>Would you like to add </p>
-        </Tile>
         <Tile title="Import Data">
             <TextGenerate></TextGenerate>
         </Tile>
