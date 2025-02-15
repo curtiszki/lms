@@ -10,7 +10,8 @@
     let generateType;
     import { GenerationTypes, InformationTypes } from "./defines/types";
     import { ref } from "vue";
-    import { DataGenerator, type DataGenerationInformation } from "@/api/generateData";
+    // Temporary until serverside is established, don't want to expose API
+    //import { DataGenerator, type DataGenerationInformation } from "@/api/generateData";
 
     const generateContent = function(res : string, subject: InformationTypes) : void {
         // Validate first
@@ -29,6 +30,7 @@
         error.value.active = false;
         error.value.errorMsg = '';
         
+        /*
         const data : DataGenerationInformation = {
             information: res,
             informationType : subject, 
@@ -37,6 +39,7 @@
 
         const generator = DataGenerator.getInstance;
         generator.generateInformation(data);
+        */
     }
 
 </script>
