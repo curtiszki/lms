@@ -12,7 +12,7 @@
     import { ref } from "vue";
     // Temporary until serverside is established, don't want to expose API
 
-    const generateContent = function(res : string, subject: InformationTypes) : void {
+    const generateContent = async function(res : string, subject: InformationTypes) : Promise<void> {
         // Validate first
         if (!generateType) {
             error.value.active = true;
@@ -44,9 +44,15 @@
             body: JSON.stringify(data),
         };
 
-        fetch('http://127.0.0.1:4000/generate', postRequest)
-            .then(response => response.json())
-            .then(data => console.log(data));
+        const response = await fetch('http://127.0.0.1:4000/generate', postRequest)
+        
+        if (response.status != 200) {
+            console.log('Error ' + response.status);
+            return;
+        }
+
+        const json = await response.json();
+        console.log(json);
     }
 
 </script>

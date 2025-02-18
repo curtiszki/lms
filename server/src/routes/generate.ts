@@ -10,7 +10,14 @@ import DataGenerator from "@/services/generateData";
 generateRouter.post('/generate', async function(req : Request, res : Response) {
   const json = req.body;
   const Generator = DataGenerator.getInstance;
+  if (!Generator.validate(json)) {
+    res.send(412);
+  }
   const response = await Generator.generateInformation(json);
-  console.log(response);
-  res.send(JSON.stringify(response));
+  if (response) {
+    res.setHeader('Content-Type', 'application/json').send(JSON.stringify(response));
+  }
+  else {
+    res.status(307).send('Error');
+  }
 });
