@@ -6,9 +6,9 @@ export enum notificationTypes {
 }
 
 export enum GenerationTypes {
-    FLASHCARD="flashcards",
-    MULTIPLE_CHOICE="multiple Choice",
-    EXAM="exam"
+    FLASHCARD="Flashcards",
+    MULTIPLE_CHOICE="Multiple Choice",
+    EXAM="Exam"
 }
 
 export enum InformationTypes {
@@ -19,4 +19,10 @@ export enum InformationTypes {
 export enum inputTypes {
     DSV,
     TEXT
+}
+
+export interface DataGenerationInformation {
+    generationType: GenerationTypes,
+    information: string,
+    informationType: InformationTypes,
 }

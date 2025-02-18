@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-const express = require("express");
+import { Request, Response, Router } from "express";
 import { generateRouter } from "./generate";
 
-const router = express.Router();
+const router = Router()
 router.get("/", function(req : Request, res: Response) {
     res.send('Index');
 });
 router.use(generateRouter);
-module.exports = router;
+
+export default router;

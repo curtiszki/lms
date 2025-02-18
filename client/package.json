@@ -17,7 +17,6 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "@tailwindcss/vite": "^4.0.3",
     "@unhead/vue": "^1.11.18",
     "d3": "^7.9.0",

@@ -8,10 +8,9 @@
         errorMsg: ''
     });
     let generateType;
-    import { GenerationTypes, InformationTypes } from "./defines/types";
+    import { GenerationTypes, InformationTypes, type DataGenerationInformation } from "./defines/types";
     import { ref } from "vue";
     // Temporary until serverside is established, don't want to expose API
-    //import { DataGenerator, type DataGenerationInformation } from "@/api/generateData";
 
     const generateContent = function(res : string, subject: InformationTypes) : void {
         // Validate first
@@ -30,16 +29,24 @@
         error.value.active = false;
         error.value.errorMsg = '';
         
-        /*
         const data : DataGenerationInformation = {
             information: res,
             informationType : subject, 
             generationType : generateType,
         }
+        
+        // Post data and wait for response
+        const postRequest = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        };
 
-        const generator = DataGenerator.getInstance;
-        generator.generateInformation(data);
-        */
+        fetch('http://127.0.0.1:4000/generate', postRequest)
+            .then(response => response.json())
+            .then(data => console.log(data));
     }
 
 </script>
