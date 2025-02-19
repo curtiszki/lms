@@ -8,10 +8,12 @@
         errorMsg: ''
     });
     let generateType;
-    import { GenerationTypes, InformationTypes, type DataGenerationInformation } from "./defines/types";
+    import { GenerationTypes, InformationTypes, notificationTypes, type DataGenerationInformation } from "./defines/types";
     import { ref } from "vue";
-    // Temporary until serverside is established, don't want to expose API
 
+    const notificationMsg = ref("");
+    const notificationType = ref(notificationTypes.NONE);
+    const emit = defineEmits(['genResponse']);
     const generateContent = async function(res : string, subject: InformationTypes) : Promise<void> {
         // Validate first
         if (!generateType) {
@@ -29,6 +31,9 @@
         error.value.active = false;
         error.value.errorMsg = '';
         
+        notificationMsg.value = 'Waiting...';
+        notificationType.value = notificationTypes.WAITING;
+
         const data : DataGenerationInformation = {
             information: res,
             informationType : subject, 
@@ -47,12 +52,56 @@
         const response = await fetch('http://127.0.0.1:4000/generate', postRequest)
         
         if (response.status != 200) {
+            notificationMsg.value = 'Error generating data...';
+            notificationType.value = notificationTypes.FAILURE;
             console.log('Error ' + response.status);
             return;
         }
 
         const json = await response.json();
-        console.log(json);
+        const jsonObj = JSON.parse(json);
+        const entries = Object.entries(jsonObj);
+        console.log(jsonObj);
+
+        let msg;
+        switch (generateType) {
+            case GenerationTypes.EXAM:
+                // multiple types
+                const values : string[] = [];
+                entries.forEach((entry) => {
+                    if (entry.length >= 2) {
+                        let subMsg : string;
+                        const type = entry[0];
+                        const l = entry[1].length;
+                        
+                        if (type == 'long') {
+                            subMsg = l + ' long answer questions';
+                        }
+                        else if (type == 'multiple') {
+                            subMsg = l + ' multiple choice questions';
+                        }
+                        else {
+                            subMsg = l + ' questions';
+                        }
+                        values.push(subMsg);
+                    }
+                })
+                msg = `Generated exam containing ${values.join(' and ')}.`
+                break;
+            case GenerationTypes.FLASHCARD:
+                msg = `Generated ${entries.length} flashcards.`
+                break;
+            case GenerationTypes.MULTIPLE_CHOICE:
+                msg = `Generated ${entries.length} multiple choice questions.`
+                break;
+            default:
+                msg = 'Unsupported generation type. No action for data.'
+                break;
+        }
+        notificationMsg.value = msg;
+        notificationType.value = notificationTypes.SUCCESS;
+
+
     }
 
 </script>
@@ -79,6 +128,7 @@
                 </span>
             </button>
         </div>
+        <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
     </div>
 </template>
   

@@ -141,19 +141,3 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
         <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
     </div>
 </template>
-
-<style lang="css">
-    @reference "tailwindcss";
-
-    .submittable {
-        @apply bg-teal-600 max-h-full hover:cursor-pointer
-    }
-
-    .success {
-        @apply text-green-500
-    }
-
-    .failure {
-        @apply text-red-500
-    }
-</style>

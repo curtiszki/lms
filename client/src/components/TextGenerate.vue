@@ -8,6 +8,14 @@
     import { ref } from "vue";
     const textRes = ref('');
     const subjectRes= ref('');
+
+    // convert response to object and take further action
+    const handleGenerativeResponse = (json : string) => {
+        const obj = JSON.parse(json);
+        const entries = Object.entries(obj);
+        console.log(entries);
+        console.log(entries.length);
+    }
 </script>
 
 <template>
@@ -32,3 +40,19 @@
         <ParseSubmission v-bind:res="subjectRes" :subject="InformationTypes.SUBJECT"></ParseSubmission>
     </Tile>
 </template>
+
+<style lang="css">
+    @reference 'tailwindcss';
+    
+    .submittable {
+        @apply bg-teal-600 max-h-full hover:cursor-pointer
+    }
+    
+    .success {
+        @apply text-green-500
+    }
+    
+    .failure {
+        @apply text-red-500
+    }
+</style>
