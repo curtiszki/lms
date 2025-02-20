@@ -8,6 +8,7 @@
         errorMsg: ''
     });
     let generateType;
+    import { validateJsonObject } from "@/services/parseGenerativeJson";
     import { GenerationTypes, InformationTypes, notificationTypes, type DataGenerationInformation } from "./defines/types";
     import { ref } from "vue";
 
@@ -60,19 +61,24 @@
 
         const json = await response.json();
         const jsonObj = JSON.parse(json);
-        const entries = Object.entries(jsonObj);
-        console.log(jsonObj);
 
+        let entries = validateJsonObject(generateType,jsonObj);
+        if (!entries) {
+            notificationMsg.value = 'An error occurred while generating data.';
+            notificationType.value = notificationTypes.FAILURE;
+            return;
+        }
+        entries = entries as [string, object][];
         let msg;
         switch (generateType) {
             case GenerationTypes.EXAM:
                 // multiple types
                 const values : string[] = [];
                 entries.forEach((entry) => {
-                    if (entry.length >= 2) {
+                    if (Object.keys(entry).length >= 2) {
                         let subMsg : string;
                         const type = entry[0];
-                        const l = entry[1].length;
+                        const l = Object.keys(entry[1] as object).length;
                         
                         if (type == 'long') {
                             subMsg = l + ' long answer questions';
@@ -101,13 +107,14 @@
         notificationMsg.value = msg;
         notificationType.value = notificationTypes.SUCCESS;
 
-
+        console.log(entries);
+        emit('genResponse', entries);
     }
 
 </script>
 
 <template>
-    <div>
+    <div class="self-center">
         <p class="text-red-500 text-sm italic" :v-show="error.active">{{ error.errorMsg }}</p>
         <div class="flex flex-row gap-20 align-middle items-end">
             <!-- Dropdown -->
@@ -128,7 +135,24 @@
                 </span>
             </button>
         </div>
-        <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
+        <div :class="notificationType" class="text-sm italic justify-center my-5 hidden" :data-notification="notificationType">
+            <p>{{notificationMsg}}</p>
+            <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly">
+                <RouterLink to="practice" class="link">Try it out?</RouterLink>
+                <RouterLink to="data" class="link">See Data.</RouterLink>
+            </div>
+        </div>
     </div>
 </template>
   
+<style lang="css" scoped>
+    @reference "tailwindcss";
+
+    .success {
+        @apply block border-teal-300 border-2;
+    }
+
+    .link {
+        @apply inline-flex my-1;     
+    }
+</style>
