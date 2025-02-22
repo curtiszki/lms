@@ -11,6 +11,11 @@ export enum GenerationTypes {
     EXAM="Exam"
 }
 
+export enum ResponseTypes {
+    MCQ,
+    LONG
+}
+
 export enum InformationTypes {
     SUBJECT="subject",
     RAW_TEXT="information"

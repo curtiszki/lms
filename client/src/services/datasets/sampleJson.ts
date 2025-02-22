@@ -9,7 +9,7 @@ export const mcq_single = [
     {
         "question": "What is the capital of Namibia?",
         "options": ["Paris", "Tokyo", "Windhoek", "Cartagena"],
-        "answer": "A"  
+        "answer": "Windhoek"  
     },
 ];
 
@@ -17,12 +17,12 @@ export const mcq_multiple = [
     {
         "question": "What is the capital of Namibia?",
         "options": ["Paris", "Tokyo", "Windhoek", "Cartagena"],
-        "answer": "A"  
+        "answer": "Windhoek"  
     },
     {
         "question": "What is the capital of Japan?",
         "options": ["Paris", "Tokyo", "Beijing", "Seoul"],
-        "answer": "A"  
+        "answer": "Tokyo"  
     },
 ];
 
@@ -41,7 +41,7 @@ export const mcq_no_match_single = [
     {
         "question": "What is the best?",
         "options": ["Frogs", "Cats", "Raccoons", "Cactus"],
-        "answer": "Apples"  
+        "answer": "Potatoes"  
     },
 ]
 
@@ -49,7 +49,7 @@ export const mcq_no_match_mult = [
     {
         "question": "What is the capital of Namibia?",
         "options": ["Paris", "Tokyo", "Windhoek", "Cartagena"],
-        "answer": "A"  
+        "answer": "Windhoek"  
     },
     {
         "question": "What is the best?",
