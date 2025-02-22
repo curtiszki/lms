@@ -6,12 +6,12 @@ import GenerativeJson from '@/components/GenerativeJson.vue';
 import { GenerationTypes } from '@/components/defines/types';
 
 import * as dataJson from "@/services/datasets/sampleJson";
-const data = dataJson.mcq_multiple;
+const data = dataJson.flashcard_multiple;
 </script>
 
 <template>
     <GridLayout>
-        <GenerativeJson :type="GenerationTypes.MULTIPLE_CHOICE"  :validated-object="data">
+        <GenerativeJson :type="GenerationTypes.FLASHCARD"  :validated-object="data">
         </GenerativeJson>
     </GridLayout>
 </template>

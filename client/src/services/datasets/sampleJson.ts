@@ -57,3 +57,21 @@ export const mcq_no_match_mult = [
         "answer": "Apples"  
     },
 ]
+
+export const flashcard_single = [
+    {
+        "question": "What is the capital of Turkey?",
+        "answer": "Istanbul"
+    }
+]
+
+export const flashcard_multiple = [
+    {
+        "question": "What is the capital of Indonesia?",
+        "answer": "Jakarta"
+    },
+    {
+        "question": "What is the capital of Turkey?",
+        "answer": "Istanbul"
+    }
+]

@@ -2,16 +2,17 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
 import { GenerationTypes, ProcedureType, ResponseTypes, type ResultsInformation } from './defines/types';
-
+import {multipleChoiceSchema, flashcardSchema} from './defines/responseSchema';
 const props = defineProps<{
     validatedObject: object,
     type: GenerationTypes
 }>()
 
-const questionEntries = Object.entries(props.validatedObject);
+const questionEntries =  Object.entries(props.validatedObject);
 const form = useTemplateRef("form");
 
 import {type Ref, ref } from 'vue';
+import FlashcardDisplay from './FlashcardDisplay.vue';
 // Can't get it to work using objects... 2 separate
 const responseMap : string[] = new Array<string>(questionEntries.length);
 responseMap.fill('');
@@ -33,7 +34,6 @@ const processForm = () => {
         if(errorMap[idx].value = (answer == responseMap[idx])) { correct+=1; } else { incorrect+=1;} 
     });
 
-    console.log("called process form!");
     results = {
         type: ProcedureType.PRACTICE,
         includes: [ResponseTypes.MCQ],
@@ -50,13 +50,13 @@ const processForm = () => {
 </script>
 
 <template>
-    <form v-if="questionEntries" ref="form" v-on:submit.prevent="processForm">
+    <form v-if="type === GenerationTypes.MULTIPLE_CHOICE && questionEntries" ref="form" v-on:submit.prevent="processForm">
         <div class="flex flex-col gap-x-0 gap-y-5" v-if="type === GenerationTypes.MULTIPLE_CHOICE">
-            <div v-for="(item, index) in questionEntries" v-bind:key=index>
+            <div v-for="(item, index) in (questionEntries as [string, multipleChoiceSchema][])" v-bind:key=index>
                 <div class="question-item">
-                    <p class="question">{{ index+1 }}. {{item[1]['question']}}</p>
+                    <p class="question">{{ index+1 }}. {{item[1].question}}</p>
                     <ul class="flex flex-row gap-y-0 gap-x-8 options justify-evenly items-center my-6">
-                        <li v-for="(option, optionIndex) in item[1]['options']" v-bind:key="optionIndex" class="flex items-center option">
+                        <li v-for="(option, optionIndex) in item[1].options" v-bind:key="optionIndex" class="flex items-center option">
                             <label class="option" :for="`question-${index}-${optionIndex}`">                                    
                                 <input :id="`question-${index}-${optionIndex}`" type="radio" :value=String(option) :name="`question-mcq-${index}-option`" v-model="responseMap[index]" required>
                                 {{ option }}
@@ -70,9 +70,7 @@ const processForm = () => {
                  </div>
             </div>
         </div>
-        <div v-else-if="type === GenerationTypes.FLASHCARD">
-    
-        </div>
+        
         <div v-else-if="type === GenerationTypes.EXAM">
     
         </div>
@@ -87,6 +85,9 @@ const processForm = () => {
             </p>
         </div>
     </form>
+    <div v-else-if="type === GenerationTypes.FLASHCARD && questionEntries">
+        <FlashcardDisplay :dataset="questionEntries"></FlashcardDisplay>
+    </div>
     <div v-else>
         <p>There was an issue rendering the information. The data type is unsupported.</p>
     </div>
