@@ -12,8 +12,13 @@ export enum GenerationTypes {
 }
 
 export enum ResponseTypes {
-    MCQ,
-    LONG
+    MCQ="Multiple Choice",
+    LONG="Long Answer"
+}
+
+export enum ProcedureType {
+    PRACTICE="Practice",
+    EXAM="Exam"
 }
 
 export enum InformationTypes {
@@ -30,4 +35,10 @@ export interface DataGenerationInformation {
     generationType: GenerationTypes,
     information: string,
     informationType: InformationTypes,
+}
+
+export interface ResultsInformation {
+    type: ProcedureType,
+    includes: ResponseTypes[],
+    results: {correct : number, incorrect : number, total: number, percentage: number}
 }

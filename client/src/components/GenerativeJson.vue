@@ -1,7 +1,7 @@
 <!-- Component that will accept JSON data, and then use that data to render corresponding html output -->
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
-import { GenerationTypes } from './defines/types';
+import { GenerationTypes, ProcedureType, ResponseTypes, type ResultsInformation } from './defines/types';
 
 const props = defineProps<{
     validatedObject: object,
@@ -15,20 +15,36 @@ import {type Ref, ref } from 'vue';
 // Can't get it to work using objects... 2 separate
 const responseMap : string[] = new Array<string>(questionEntries.length);
 responseMap.fill('');
-//const errorMap : (Ref<boolean, boolean>)[] = new Array<Ref<boolean, boolean>>(questionEntries.length);
-//errorMap.fill(ref(false));
+
 const errorMap : Ref<boolean, boolean>[]= [];
 for (let i = 0; i < questionEntries.length; i+=1) {
     errorMap.push(ref(false));
 }
 
 //const errorMap : boolean[] = new Array<boolean>(questionEntries.length);
+let results : ResultsInformation;
+const displayResults = ref(false);
+const processForm = () => {
+    displayResults.value = false;
 
-const processForm = (data : object) => {
+    let incorrect = 0, correct = 0;
     questionEntries.forEach((entry, idx) => {
         const answer : string = entry[1]['answer'];
-        errorMap[idx].value = !(answer == responseMap[idx]);
+        if(errorMap[idx].value = (answer == responseMap[idx])) { correct+=1; } else { incorrect+=1;} 
     });
+
+    console.log("called process form!");
+    results = {
+        type: ProcedureType.PRACTICE,
+        includes: [ResponseTypes.MCQ],
+        results: {
+            correct: correct,
+            incorrect: incorrect,
+            total: questionEntries.length,
+            percentage: (Math.floor(((correct / questionEntries.length)*10000))/100)
+        },
+    }
+    displayResults.value = true;
 }
 
 </script>
@@ -61,6 +77,15 @@ const processForm = (data : object) => {
     
         </div>
         <button class="btn" type="submit">Submit</button>
+
+        <div class="results" v-show="displayResults">
+            <h3>
+                Results:
+            </h3>
+            <p>
+                You got {{ results?.results.correct }} out of {{ results?.results.total }}. Giving a total score of {{ results?.results.percentage.toLocaleString()}}%.
+            </p>
+        </div>
     </form>
     <div v-else>
         <p>There was an issue rendering the information. The data type is unsupported.</p>
