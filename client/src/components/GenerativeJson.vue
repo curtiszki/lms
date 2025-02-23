@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
 import { GenerationTypes, ProcedureType, ResponseTypes, type ResultsInformation } from './defines/types';
-import {multipleChoiceSchema, flashcardSchema} from './defines/responseSchema';
+import {type multipleChoiceSchema, type flashcardSchema} from './defines/responseSchema';
 const props = defineProps<{
     validatedObject: object,
     type: GenerationTypes
@@ -88,6 +88,11 @@ const processForm = () => {
     <div v-else-if="type === GenerationTypes.FLASHCARD && questionEntries">
         <FlashcardDisplay :dataset="questionEntries"></FlashcardDisplay>
     </div>
+    <!-- Implement long answer at some point 
+    <div v-else-if="type === GenerationTypes.LONG && questionEntries">
+        
+    </div>
+    -->
     <div v-else>
         <p>There was an issue rendering the information. The data type is unsupported.</p>
     </div>

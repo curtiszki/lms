@@ -50,16 +50,20 @@
             body: JSON.stringify(data),
         };
 
-        const response = await fetch('http://127.0.0.1:4000/generate', postRequest)
-        
-        if (response.status != 200) {
+        let json;
+        try {
+            const response = await fetch('http://127.0.0.1:4000/generate', postRequest)
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            json = await response.json();
+        } catch(e) {
             notificationMsg.value = 'Error generating data...';
             notificationType.value = notificationTypes.FAILURE;
-            console.log('Error ' + response.status);
+            console.error(e);
             return;
         }
 
-        const json = await response.json();
         const jsonObj = JSON.parse(json);
 
         let entries = validateJsonObject(generateType,jsonObj);
@@ -135,9 +139,9 @@
                 </span>
             </button>
         </div>
-        <div :class="notificationType" class="text-sm italic justify-center my-5 hidden" :data-notification="notificationType">
+        <div :class="notificationType" class="text-sm italic justify-center my-5" :data-notification="notificationType">
             <p>{{notificationMsg}}</p>
-            <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly">
+            <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly" v-show="notificationType===notificationTypes.SUCCESS">
                 <RouterLink to="practice" class="link">Try it out?</RouterLink>
                 <RouterLink to="data" class="link">See Data.</RouterLink>
             </div>
