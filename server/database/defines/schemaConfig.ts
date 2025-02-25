@@ -1,5 +1,7 @@
 export const schemaNames = {
     SchemaName: 'USER_INFORMATION',
+    USERNAME_SIZE_LIMIT: '16',
+    PASSWORD_SIZE_LIMIT: '16',
     // table name for user data
     USER_ACCOUNT : {
        TABLE_NAME: 'userAccount',

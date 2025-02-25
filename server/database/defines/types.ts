@@ -1,4 +1,6 @@
 export const enum DatabaseResult {
     SUCCESS,
-    FAILURE
+    FAILURE,
+    ERROR,
+    QUERY_UNRESOLVED
 }

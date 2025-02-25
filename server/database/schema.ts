@@ -8,7 +8,7 @@ import { schemaNames } from "./defines/schemaConfig";
 const createUserTable = `
     CREATE TABLE IF NOT EXISTS ${schemaNames.USER_ACCOUNT.TABLE_NAME} (
         ${schemaNames.USER_ACCOUNT.ID} uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-        ${schemaNames.USER_ACCOUNT.USERNAME} VARCHAR(16) NOT NULL,
+        ${schemaNames.USER_ACCOUNT.USERNAME} VARCHAR(${schemaNames.USERNAME_SIZE_LIMIT}) UNIQUE NOT NULL,
         PRIMARY KEY (${schemaNames.USER_ACCOUNT.ID})
     );
 `;
@@ -21,7 +21,7 @@ const createUserTable = `
 const createUserData = `
 CREATE TABLE IF NOT EXISTS ${schemaNames.USER_DATA.TABLE_NAME} (
     ${schemaNames.USER_DATA.ID} uuid NOT NULL UNIQUE,
-    ${schemaNames.USER_DATA.PASSWORD} varchar(16) NOT NULL,
+    ${schemaNames.USER_DATA.PASSWORD} varchar(${schemaNames.PASSWORD_SIZE_LIMIT}) NOT NULL,
     FOREIGN KEY (${schemaNames.USER_DATA.ID}) references ${schemaNames.USER_ACCOUNT.TABLE_NAME}(${schemaNames.USER_ACCOUNT.ID})
 );
 `;
