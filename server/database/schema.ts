@@ -54,8 +54,16 @@ CREATE TABLE IF NOT EXISTS storageItem (
 `;
 
 import postgres from "postgres";
-const export initializeTables = (sql : postgres.Sql<{}>) => {
-    const create = await sql `${createUserTable} ${createUserData} ${createStorage} ${createCollection} ${createStorageItem}`
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export const initializeTables = async (sql : postgres.Sql<{}>) => {
+    try {
+        //await sql `${createUserTable} ${createUserData} ${createStorage} ${createCollection} ${createStorageItem}`;
+    }
+    catch (error : unknown) {
+        console.log('An error occured while initializing the database...');
+        console.log(error);
+        return;
+    }
     console.log('Initialized tables.');
     return;
 }

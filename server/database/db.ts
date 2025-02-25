@@ -1,8 +1,10 @@
-import postgres from 'postgres';
+import pg from 'pg';
+const { Client } = pg;
 
-const sql = postgres({
+export const client = new Client({
     host: '127.0.0.1',
     port : 5432,
     database : 'Frank',
-    username : 'Frank'
+    user : 'Frank'
 });
+client.connect();
