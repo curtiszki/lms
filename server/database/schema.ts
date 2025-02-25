@@ -1,12 +1,15 @@
+import { schemaNames } from "./defines/schemaConfig";
+
 /* User -- Identifies the user
 *  id (primary key)
 *  username
 */
+
 const createUserTable = `
-    CREATE TABLE IF NOT EXISTS user (
-        user_id uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-        username varchar(16) NOT NULL,
-        PRIMARY KEY (id)
+    CREATE TABLE IF NOT EXISTS ${schemaNames.USER_ACCOUNT.TABLE_NAME} (
+        ${schemaNames.USER_ACCOUNT.ID} uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+        ${schemaNames.USER_ACCOUNT.USERNAME} VARCHAR(16) NOT NULL,
+        PRIMARY KEY (${schemaNames.USER_ACCOUNT.ID})
     );
 `;
 
@@ -16,10 +19,10 @@ const createUserTable = `
 *  password
 */
 const createUserData = `
-CREATE TABLE IF NOT EXISTS userData (
-    userdata_id uuid NOT NULL UNIQUE,
-    password varchar(16) NOT NULL,
-    FOREIGN KEY (userdata_id) references users(user_id)
+CREATE TABLE IF NOT EXISTS ${schemaNames.USER_DATA.TABLE_NAME} (
+    ${schemaNames.USER_DATA.ID} uuid NOT NULL UNIQUE,
+    ${schemaNames.USER_DATA.PASSWORD} varchar(16) NOT NULL,
+    FOREIGN KEY (${schemaNames.USER_DATA.ID}) references ${schemaNames.USER_ACCOUNT.TABLE_NAME}(${schemaNames.USER_ACCOUNT.ID})
 );
 `;
 
@@ -30,34 +33,39 @@ CREATE TABLE IF NOT EXISTS userData (
 */
 
 const createStorage = `
-CREATE TABLE IF NOT EXISTS storage (
-    storage_id uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL UNIQUE,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+CREATE TABLE IF NOT EXISTS ${schemaNames.STORAGE.TABLE_NAME} (
+    ${schemaNames.STORAGE.ID} uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+    ${schemaNames.STORAGE.ID_REFERENCES_USER_ACCOUNT} uuid NOT NULL UNIQUE,
+    FOREIGN KEY (${schemaNames.STORAGE.ID_REFERENCES_USER_ACCOUNT}) REFERENCES ${schemaNames.USER_ACCOUNT.TABLE_NAME}(${schemaNames.USER_ACCOUNT.ID})
 );
 `;
 
 const createCollection = `
-CREATE TABLE IF NOT EXISTS collection (
-    collection_id uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
-    storage_id uuid NOT NULL UNIQUE,
-    FOREIGN KEY (storage_id) REFERENCES storage(storage_id)
+CREATE TABLE IF NOT EXISTS ${schemaNames.COLLECTION.TABLE_NAME} (
+    ${schemaNames.COLLECTION.ID} uuid NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+    ${schemaNames.COLLECTION.ID_REFERENCES_STORAGE} uuid NOT NULL UNIQUE,
+    FOREIGN KEY (${schemaNames.COLLECTION.ID_REFERENCES_STORAGE}) REFERENCES ${schemaNames.STORAGE.TABLE_NAME}(${schemaNames.STORAGE.ID})
 );
 `;
 
 const createStorageItem = `
-CREATE TABLE IF NOT EXISTS storageItem (
-    collection_id uuid NOT NULL UNIQUE,
-    data JSON NOT NULL,
-    FOREIGN KEY (collection_id) REFERENCES collection(collection_id) 
+CREATE TABLE IF NOT EXISTS ${schemaNames.ITEM_CONTAINER.TABLE_NAME} (
+    ${schemaNames.ITEM_CONTAINER.ID_REFERENCES_COLLECTION} uuid NOT NULL UNIQUE,
+    ${schemaNames.ITEM_CONTAINER.JSON} JSON NOT NULL,
+    FOREIGN KEY (${schemaNames.ITEM_CONTAINER.ID_REFERENCES_COLLECTION}) REFERENCES ${schemaNames.COLLECTION.TABLE_NAME}(${schemaNames.COLLECTION.ID}) 
 );
 `;
 
-import postgres from "postgres";
+import {type Client} from "pg"
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export const initializeTables = async (sql : postgres.Sql<{}>) => {
+export const initializeTables = async (client: Client) => {
     try {
-        //await sql `${createUserTable} ${createUserData} ${createStorage} ${createCollection} ${createStorageItem}`;
+        const query = [createUserTable, 
+            createUserData,
+            createStorage,
+            createCollection,
+            createStorageItem].join('\n\t')
+        await client.query(query)
     }
     catch (error : unknown) {
         console.log('An error occured while initializing the database...');

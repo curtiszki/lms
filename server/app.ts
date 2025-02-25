@@ -1,4 +1,6 @@
 import cors, { CorsOptions } from "cors"
+import passport from "passport";
+import session from "express-session";
 
 // Custom type to accomodate for express error
 interface ResponseError extends Error {
@@ -11,8 +13,9 @@ import path from 'path';
 //import logger from 'morgan';
 
 // Database initialization
-//import { initialize } from "database/utils/createDatabase";
-//const initialization = initialize();
+import { initialize } from "database/db";
+initialize();
+
 const app = express();
 
 // view engine setup
@@ -25,6 +28,8 @@ app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 const corsOptions : CorsOptions = {
   origin: [process.env.CLIENT_URI || 'http://localhost:5173'],
