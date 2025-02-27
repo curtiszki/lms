@@ -1,17 +1,13 @@
 import { DatabaseResult } from "database/defines/types"
-import {type Client, type DatabaseError} from "pg";
+import {DatabaseError, QueryResult, QueryResultRow, type Client} from "pg";
 import { schemaNames } from "database/defines/schemaConfig";
 
-export class DatabaseUser {
-    constructor() {
-        this.createUser = this.createUser.bind(this);
-        this.findUser = this.findUser.bind(this);
-    }
+export class DatabaseQuery {
     // Create a user profile
-    public async createUser(client: Client, username: string) : Promise<DatabaseResult> {
+    public async insertValues(client: Client, tableName: string, column: string[], values: string[]) : Promise<DatabaseResult> {
         const query =
         `
-            INSERT INTO ${schemaNames.USER_ACCOUNT.TABLE_NAME} (${schemaNames.USER_ACCOUNT.USERNAME}) VALUES ('${username}');
+            INSERT INTO ${tableName} (${column}) VALUES ('${values.join(' ')}');
         `;
         try {
             await client.query(query);
@@ -30,11 +26,11 @@ export class DatabaseUser {
         }
     };
 
-    public async findUser(client: Client, username: string) : Promise<DatabaseResult>  {
+    public async findValue(client: Client,  tableName: string, targetColumn: string, value: string, ...retrievedFields: string[]) : Promise<DatabaseResult>  {
         const query =  
         `   
-            SELECT (${schemaNames.USER_ACCOUNT.ID}) FROM ${schemaNames.USER_ACCOUNT.TABLE_NAME}
-            WHERE '${username}' IN (${schemaNames.USER_ACCOUNT.USERNAME})
+            SELECT (${retrievedFields.join(' ')}) FROM ${tableName}
+            WHERE '${value}' IN (${targetColumn})
         `;
         try {
             return (await client.query(query).then((result) => {
@@ -43,5 +39,22 @@ export class DatabaseUser {
         } catch (e: unknown) {
             return DatabaseResult.ERROR;
         }
-    } 
+    }
+    
+    public async retrieveRow(client: Client,  tableName: string, targetColumn: string, value: string, ...retrievedFields: string[]) : Promise<QueryResultRow|DatabaseResult.ERROR>  {
+        const query =  
+        `   
+            SELECT (${retrievedFields.join(' ')}) FROM ${tableName}
+            WHERE '${value}' IN (${targetColumn})
+        `;
+        try {
+            return (await client.query(query).then((result) => {
+                const row = result.rows[0];
+                return row;
+            }));
+        } catch (e: unknown) {
+            return DatabaseResult.ERROR;
+        }
+    }  
+
 }

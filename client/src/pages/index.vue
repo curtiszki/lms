@@ -38,8 +38,6 @@ const darkHeroBg = {
                     class="w-full h-full object-fill object-center aspect-auto">
             </div>
             <HeroWelcome
-                heading="How do you do?"
-                description="Here's a sample description. Blah blah blah blah blah blah blah."
             ></HeroWelcome>
         </div>
     </AppLayout>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Login from './Login.vue';
 defineProps<{
-  heading: string,
+  heading?: string,
   description?: string
 }>()
 </script>
@@ -9,13 +9,8 @@ defineProps<{
 <template>
   <div class="hero-container ring-2 ring-indigo-300 box-content p-4 rounded-lg 
   bg-black/95 z-10 max-w-120 min-h-80 text-center 
-  leading-snug relative top-[-5%]">
-    <div class="text-3xl mb-2 font-bold green">
-      <h3>{{ heading }}</h3>
-    </div>
-    <p>
-      {{ description }}
-    </p>
+  leading-snug relative top-[-5%]"
+  >
     <Login></Login>
   </div>
 </template>

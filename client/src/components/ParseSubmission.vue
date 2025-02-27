@@ -11,6 +11,7 @@
     import { validateJsonObject } from "@/services/parseGenerativeJson";
     import { GenerationTypes, InformationTypes, notificationTypes, type DataGenerationInformation } from "./defines/types";
     import { ref } from "vue";
+    import { config } from "./defines/config";
 
     const notificationMsg = ref("");
     const notificationType = ref(notificationTypes.NONE);
@@ -52,7 +53,7 @@
 
         let json;
         try {
-            const response = await fetch('http://127.0.0.1:4000/generate', postRequest)
+            const response = await fetch(`'${[config.SITE_BASE_URL, 'generate'].join('/')}'`, postRequest);
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
@@ -111,7 +112,6 @@
         notificationMsg.value = msg;
         notificationType.value = notificationTypes.SUCCESS;
 
-        console.log(entries);
         emit('genResponse', entries);
     }
 
