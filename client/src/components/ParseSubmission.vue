@@ -53,7 +53,8 @@
 
         let json;
         try {
-            const response = await fetch(`'${[config.SITE_BASE_URL, 'generate'].join('/')}'`, postRequest);
+            const target = [config.SITE_BASE_URL, 'generate'].join('/');
+            const response = await fetch(target, postRequest);
             if (!response.ok) {
                 throw new Error(response.statusText);
             }

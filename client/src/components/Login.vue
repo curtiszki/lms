@@ -77,9 +77,11 @@ const verifyRegister = async () : Promise<void> => {
     };
 
     try {
-        const response = await fetch(`'${[config.SITE_BASE_URL, 'register', 'users'].join('/')}'`, postRequest);
-        if (!response.ok) {
+        const target = [config.SITE_BASE_URL, 'users', 'register'].join('/');
+        const response = await fetch(target, postRequest);
+        if (response.status != 201) {
             throw new Error(response.statusText);
+            return;
         }
         const json = await response.json();
     }

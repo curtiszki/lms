@@ -8,3 +8,9 @@ export enum InformationTypes {
     SUBJECT="subject",
     RAW_TEXT="information"
 }
+
+// Registration object schema
+export interface registerJSON {
+    'username': string,
+    'password': string,
+};

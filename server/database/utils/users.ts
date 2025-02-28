@@ -7,7 +7,9 @@ export class DatabaseQuery {
     public async insertValues(client: Client, tableName: string, column: string[], values: string[]) : Promise<DatabaseResult> {
         const query =
         `
-            INSERT INTO ${tableName} (${column}) VALUES ('${values.join(' ')}');
+            INSERT INTO ${tableName} (${column}) VALUES (${values.map(value => {
+                return  "'"+value+"'";
+            }).join(',')});
         `;
         try {
             await client.query(query);
@@ -29,7 +31,7 @@ export class DatabaseQuery {
     public async findValue(client: Client,  tableName: string, targetColumn: string, value: string, ...retrievedFields: string[]) : Promise<DatabaseResult>  {
         const query =  
         `   
-            SELECT (${retrievedFields.join(' ')}) FROM ${tableName}
+            SELECT (${retrievedFields.join(',')}) FROM ${tableName}
             WHERE '${value}' IN (${targetColumn})
         `;
         try {
@@ -44,7 +46,7 @@ export class DatabaseQuery {
     public async retrieveRow(client: Client,  tableName: string, targetColumn: string, value: string, ...retrievedFields: string[]) : Promise<QueryResultRow|DatabaseResult.ERROR>  {
         const query =  
         `   
-            SELECT (${retrievedFields.join(' ')}) FROM ${tableName}
+            SELECT (${retrievedFields.join(',')}) FROM ${tableName}
             WHERE '${value}' IN (${targetColumn})
         `;
         try {

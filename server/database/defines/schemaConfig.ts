@@ -12,7 +12,7 @@ export const schemaNames = {
     USER_DATA : {
         TABLE_NAME: 'userData',
         ID: 'userdata_id',
-        PASSWORD: 'password'
+        PASSWORD: 'password',
     },
     // table for storage
     STORAGE: {

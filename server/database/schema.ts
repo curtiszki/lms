@@ -1,5 +1,11 @@
 import { schemaNames } from "./defines/schemaConfig";
 
+// crypto to hash inputs
+const intialization =
+`
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;
+`;
+
 /* User -- Identifies the user
 *  id (primary key)
 *  username
@@ -21,9 +27,22 @@ const createUserTable = `
 const createUserData = `
 CREATE TABLE IF NOT EXISTS ${schemaNames.USER_DATA.TABLE_NAME} (
     ${schemaNames.USER_DATA.ID} uuid NOT NULL UNIQUE,
-    ${schemaNames.USER_DATA.PASSWORD} varchar(${schemaNames.PASSWORD_SIZE_LIMIT}) NOT NULL,
+    ${schemaNames.USER_DATA.PASSWORD} bytea NOT NULL,
     FOREIGN KEY (${schemaNames.USER_DATA.ID}) references ${schemaNames.USER_ACCOUNT.TABLE_NAME}(${schemaNames.USER_ACCOUNT.ID})
 );
+
+CREATE OR REPLACE FUNCTION password_hash() RETURNS trigger AS $$
+BEGIN
+    IF tg_op = 'INSERT' THEN
+        NEW.password = digest(NEW.password, 'sha256');
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER insert_password_hash
+    BEFORE INSERT ON ${schemaNames.USER_DATA.TABLE_NAME}
+    FOR EACH ROW EXECUTE PROCEDURE password_hash();
 `;
 
 /*
@@ -60,7 +79,9 @@ import {type Client} from "pg"
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export const initializeTables = async (client: Client) => {
     try {
-        const query = [createUserTable, 
+        const query = [
+            intialization,
+            createUserTable, 
             createUserData,
             createStorage,
             createCollection,
