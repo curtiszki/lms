@@ -11,11 +11,13 @@ const enum LoginResults {
     INVALID,
     NO_ERR,
     PASSWORD_NOT_IDENTICAL,
-    USERNAME_TAKEN
+    USERNAME_TAKEN,
+    REGISTRATION_ERROR,
+    SUCCESSFUL_REGISTRATION
 };
 
 // Verification for login input
-const loginErrors = {
+const loginNotifications = {
     usernameError: ref(LoginResults.USERNAME_NO_ERR),
     loginError: ref(LoginResults.NO_ERR),
     registerError: ref(LoginResults.NO_ERR),
@@ -23,7 +25,7 @@ const loginErrors = {
     regPasswordError: ref(LoginResults.PASSWORD_NO_ERR)
 };
 
-const errorMsg = {
+const notificationMsg = {
     [LoginResults.USERNAME_INVALID_CHARACTER] : 'Username contains an invalid character (alphanumeric only).',
     [LoginResults.INVALID] : 'Incorrect username or password.',
     [LoginResults.USERNAME_NO_ERR] : '',
@@ -32,6 +34,9 @@ const errorMsg = {
     [LoginResults.USERNAME_TAKEN] : 'Username is already taken.',
     [LoginResults.NO_ERR] : '',
     [LoginResults.PASSWORD_NOT_IDENTICAL] : 'Passwords do not match.',
+    [LoginResults.REGISTRATION_ERROR] : "Something went wrong during registration",
+    [LoginResults.SUCCESSFUL_REGISTRATION] : "Successfully created an account!"
+
 }
 
 const register = ref(true);
@@ -51,16 +56,16 @@ const verifyUsername = (refField: Ref<string, string>) : boolean => {
 
 const verifyRegister = async () : Promise<void> => {
     if (verifyUsername(registerUsername)) {
-        loginErrors.regUsernameError.value = LoginResults.USERNAME_INVALID_CHARACTER;
+        loginNotifications.regUsernameError.value = LoginResults.USERNAME_INVALID_CHARACTER;
         return;
     }
-    loginErrors.regUsernameError.value = LoginResults.USERNAME_NO_ERR;
+    loginNotifications.regUsernameError.value = LoginResults.USERNAME_NO_ERR;
 
     if (registerPassword.value !== registerSecondaryRef.value) {
-        loginErrors.regPasswordError.value = LoginResults.PASSWORD_NOT_IDENTICAL;
+        loginNotifications.regPasswordError.value = LoginResults.PASSWORD_NOT_IDENTICAL;
         return;
     }
-    loginErrors.regPasswordError.value = LoginResults.PASSWORD_NO_ERR;
+    loginNotifications.regPasswordError.value = LoginResults.PASSWORD_NO_ERR;
 
     // Make API call to try to register
     const data = {
@@ -80,25 +85,39 @@ const verifyRegister = async () : Promise<void> => {
         const target = [config.SITE_BASE_URL, 'users', 'register'].join('/');
         const response = await fetch(target, postRequest);
         if (response.status != 201) {
-            throw new Error(response.statusText);
-            return;
+            console.log(response);
+            // if username is taken
+            if (response.status == 409) {
+                console.log('is 409?');
+                loginNotifications.registerError.value = LoginResults.USERNAME_TAKEN;
+                return;
+            }
+            else {
+                throw new Error('Unknown or generic issue');
+            }
         }
-        const json = await response.json();
+            
+        const msg = 'Successfully created the account: '+ registerUsername.value + '!';
+        registerUsername.value = '';
+        registerPassword.value = '';
+        registerSecondaryRef.value = '';
+
+        notificationMsg[LoginResults.SUCCESSFUL_REGISTRATION] = msg;
+        loginNotifications.registerError.value = LoginResults.SUCCESSFUL_REGISTRATION;
     }
     catch (e) {
         // Parse the error, add more to this later
-        loginErrors.registerError.value = LoginResults.USERNAME_TAKEN;
-        console.error(e);
+        loginNotifications.registerError.value = LoginResults.REGISTRATION_ERROR;
         return;
     }
 }
 
 const verifyLogin = () : void => {
     if (verifyUsername(usernameRef)) {
-        loginErrors.usernameError.value = LoginResults.USERNAME_INVALID_CHARACTER
+        loginNotifications.usernameError.value = LoginResults.USERNAME_INVALID_CHARACTER
         return
     }
-    loginErrors.usernameError.value = LoginResults.USERNAME_NO_ERR;
+    loginNotifications.usernameError.value = LoginResults.USERNAME_NO_ERR;
 }
 </script>
 
@@ -113,8 +132,8 @@ const verifyLogin = () : void => {
                 <label for="username" class="block text-gray-700 text-sm font-bold mb-2">
                     Username
                 </label>
-                <input type="text" class="input" :class="{error: (loginErrors.usernameError.value != LoginResults.USERNAME_NO_ERR)}" :maxlength="sizeLimits.username" required aria-required="true" v-model="usernameRef">
-                <span class="text-red-500 text-sm italic" :v-show="loginErrors.usernameError.value">{{errorMsg[loginErrors.usernameError.value]}}</span>
+                <input type="text" class="input" :class="{error: (loginNotifications.usernameError.value != LoginResults.USERNAME_NO_ERR)}" :maxlength="sizeLimits.username" required aria-required="true" v-model="usernameRef">
+                <span class="msg" :class="[(loginNotifications.registerError.value == LoginResults.SUCCESSFUL_REGISTRATION) ? 'success-msg' : 'error-msg']" :v-show="loginNotifications.usernameError.value">{{notificationMsg[loginNotifications.usernameError.value]}}</span>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
@@ -123,7 +142,7 @@ const verifyLogin = () : void => {
                 <input class="input" 
                     id="password" type="password" placeholder="******************" v-model="passwordRef" :maxlength="sizeLimits.password" required aria-required="true">
             </div>
-            <span :v-show="loginErrors.loginError.value != LoginResults.NO_ERR">{{ errorMsg[loginErrors.loginError.value] }}</span>
+            <span :v-show="loginNotifications.loginError.value != LoginResults.NO_ERR">{{ notificationMsg[loginNotifications.loginError.value] }}</span>
             <div class="flex flex-row gap-y-0 gap-x-8 items-center">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                     Sign In
@@ -139,7 +158,7 @@ const verifyLogin = () : void => {
                 -->
             </div>
         </form>
-        <form v-show="!register.valueOf()" class="bg-transparent mb-4" v-on:submit.prevent="verifyRegister">
+        <form v-show="!register.valueOf()" class="bg-transparent mb-4" v-on:submit.prevent="verifyRegister" ref="registerForm">
             <div class="text-3xl font-bold green mb-2">
                 <h3>Register</h3>
             </div>
@@ -147,8 +166,8 @@ const verifyLogin = () : void => {
                 <label for="reg-username" class="block text-gray-700 text-sm font-bold mb-2">
                     Username
                 </label>
-                <input id="reg-username" type="text" class="input" :class="{error: (loginErrors.regUsernameError.value != LoginResults.USERNAME_NO_ERR)}" :maxlength="sizeLimits.username" required aria-required="true" v-model="registerUsername">
-                <span class="text-red-500 text-sm italic" :v-show="loginErrors.regUsernameError.value">{{errorMsg[loginErrors.regUsernameError.value]}}</span>
+                <input id="reg-username" type="text" class="input" :class="{error: (loginNotifications.regUsernameError.value != LoginResults.USERNAME_NO_ERR)}" :maxlength="sizeLimits.username" required aria-required="true" v-model="registerUsername">
+                <span class="msg" :class="[(loginNotifications.registerError.value == LoginResults.SUCCESSFUL_REGISTRATION) ? 'success-msg' : 'error-msg']" :v-show="loginNotifications.regUsernameError.value">{{notificationMsg[loginNotifications.regUsernameError.value]}}</span>
             </div>
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="reg-password">
@@ -163,9 +182,9 @@ const verifyLogin = () : void => {
                 </label>
                 <input class="input" 
                     id="reg-confirm-password" type="password" placeholder="******************" v-model="registerSecondaryRef" :maxlength="sizeLimits.password" required aria-required="true">
-                    <span class="text-red-500 text-sm italic" :v-show="loginErrors.regPasswordError.value === LoginResults.PASSWORD_NOT_IDENTICAL">{{errorMsg[loginErrors.regPasswordError.value]}}</span>
+                    <span class="msg" :class="[(loginNotifications.registerError.value == LoginResults.SUCCESSFUL_REGISTRATION) ? 'success-msg' : 'error-msg']" :v-show="loginNotifications.regPasswordError.value === LoginResults.PASSWORD_NOT_IDENTICAL">{{notificationMsg[loginNotifications.regPasswordError.value]}}</span>
             </div>
-            <span :v-show="loginErrors.registerError.value != LoginResults.NO_ERR">{{ errorMsg[loginErrors.loginError.value] }}</span>
+            <span class="msg" :class="[(loginNotifications.registerError.value == LoginResults.SUCCESSFUL_REGISTRATION) ? 'success-msg' : 'error-msg']" :v-show="loginNotifications.registerError.value != LoginResults.NO_ERR">{{ notificationMsg[loginNotifications.registerError.value] }}</span>
             <div class="flex flex-row gap-y-0 gap-x-8 items-center">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" v-on:click="register = !register">
                     Go Back
@@ -185,6 +204,16 @@ const verifyLogin = () : void => {
 }
 .error {
     @apply border-red-500;
+}
+.msg {
+    @apply text-sm block mt-4 mb-6 italic;
+}
+.error-msg {
+    @apply text-red-500;
+}
+
+.success-msg {
+    @apply text-green-500;
 }
 
 .link {

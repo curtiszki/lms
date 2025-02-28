@@ -13,10 +13,14 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
     // Should expect a username and password
     // Insert user into username and password table
     const json = req.body as registerJSON;
+    res.type("text");
     try {
         const query = new DatabaseQuery();
         let queryRes = await query.findValue(client, schemaNames.USER_ACCOUNT.TABLE_NAME, schemaNames.USER_ACCOUNT.USERNAME, json.username, schemaNames.USER_ACCOUNT.ID);
-        console.log(queryRes);
+        if (queryRes === DatabaseResult.SUCCESS) {
+            res.status(409).send('Taken username');
+            return;
+        }
         queryRes = await query.insertValues(client, schemaNames.USER_ACCOUNT.TABLE_NAME, [schemaNames.USER_ACCOUNT.USERNAME], [json.username]);
         if (queryRes === DatabaseResult.ERROR) {
             throw new Error('Duplicate user');
@@ -33,11 +37,12 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
             throw new Error('Unable to update password table.');
         }
 
-        res.status(201).send('Good so far');
+        res.status(201).send('Created account');
+        return;
     }
     catch (e) {
-        console.log('Error processing  registration request' + e);
-        res.status(500).send('Error processing request');
+        const err = e as Error;
+        res.status(500).send(err.message);
     }
 
 });

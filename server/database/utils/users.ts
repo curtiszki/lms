@@ -24,7 +24,7 @@ export class DatabaseQuery {
             else {
                 console.log('Error handling request.')
             }
-            return DatabaseResult.FAILURE;
+            return DatabaseResult.ERROR;
         }
     };
 
