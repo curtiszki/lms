@@ -5,13 +5,16 @@ import GenerativeJson from '@/components/GenerativeJson.vue';
 // Just for testing purposes!
 import { GenerationTypes } from '@/components/defines/types';
 
-import * as dataJson from "@/services/datasets/sampleJson";
-const data = dataJson.flashcard_multiple;
+import { informationStore } from '@/stores/state';
+const store = informationStore();
 </script>
 
 <template>
     <GridLayout>
-        <GenerativeJson :type="GenerationTypes.FLASHCARD"  :validated-object="data">
+        <div v-if="store.generationType === GenerationTypes.NONE || !store.information">
+            <p>No input data.</p>
+        </div>
+        <GenerativeJson v-else :type="store.generationType"  :validated-object="store.information">
         </GenerativeJson>
     </GridLayout>
 </template>

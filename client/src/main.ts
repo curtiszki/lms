@@ -3,11 +3,12 @@ import { createApp } from 'vue'
 
 import App from '@/App.vue'
 import router from '@/router/index'
+import { createPinia } from 'pinia'
 
-
+// pinia to save state
+const pinia = createPinia();
 const app = createApp(App);
-app.use(router)
-//const head = createHead()
-//app.use(head)
+app.use(router);
+app.use(pinia);
 
-app.mount('#app')
+app.mount('#app');

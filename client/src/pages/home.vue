@@ -11,10 +11,7 @@
     <GridLayout>
         <LargeTitle title="Welcome, user_name"></LargeTitle>
         <Tile title="Flashcards">
-            <p>You currently have 321 decks blah blah blah</p>
-            <p>You wanna do something??</p>
-            <p>Conditionally display the number of remaining things to study.</p>
-            <br>
+            <p>As a guest, you are not able to to access stored data, please sign up if you wish to do so.</p>
             <ParseData :verifyType="inputTypes.DSV" accepts=".tsv,.csv" description="If you have an appropriately formatted file (comma-separated file or tab-separated file),
                 you can import them to generate new flashcard datasets. (TSV or CSV. Tab-separated values or comma-separated value files only.)"
                 :parseData=true></ParseData>

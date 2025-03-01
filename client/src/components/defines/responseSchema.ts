@@ -9,3 +9,8 @@ export interface multipleChoiceSchema {
     options: string[],
     answer: string
 }
+
+export interface examSchema {
+    flashcards: flashcardSchema,
+    mcq: multipleChoiceSchema
+}

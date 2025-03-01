@@ -13,9 +13,11 @@
     import { ref } from "vue";
     import { config } from "./defines/config";
 
+    import { informationStore } from "@/stores/state";
+    const store = informationStore();
+
     const notificationMsg = ref("");
     const notificationType = ref(notificationTypes.NONE);
-    const emit = defineEmits(['genResponse']);
     const generateContent = async function(res : string, subject: InformationTypes) : Promise<void> {
         // Validate first
         if (!generateType) {
@@ -112,8 +114,7 @@
         }
         notificationMsg.value = msg;
         notificationType.value = notificationTypes.SUCCESS;
-
-        emit('genResponse', entries);
+        store.setInformation(jsonObj, generateType);
     }
 
 </script>
@@ -143,7 +144,7 @@
         <div :class="notificationType" class="text-sm italic justify-center my-5" :data-notification="notificationType">
             <p>{{notificationMsg}}</p>
             <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly" v-show="notificationType===notificationTypes.SUCCESS">
-                <RouterLink to="practice" class="link">Try it out?</RouterLink>
+                <RouterLink to="practice" class="link" >Try it out?</RouterLink>
                 <RouterLink to="data" class="link">See Data.</RouterLink>
             </div>
         </div>

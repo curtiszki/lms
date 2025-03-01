@@ -9,13 +9,6 @@
     const textRes = ref('');
     const subjectRes= ref('');
 
-    // convert response to object and take further action
-    const handleGenerativeResponse = (json : string) => {
-        const obj = JSON.parse(json);
-        const entries = Object.entries(obj);
-        console.log(entries);
-        console.log(entries.length);
-    }
 </script>
 
 <template>

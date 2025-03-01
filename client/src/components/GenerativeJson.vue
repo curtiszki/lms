@@ -31,7 +31,17 @@ const processForm = () => {
     let incorrect = 0, correct = 0;
     questionEntries.forEach((entry, idx) => {
         const answer : string = entry[1]['answer'];
-        if(errorMap[idx].value = (answer == responseMap[idx])) { correct+=1; } else { incorrect+=1;} 
+        console.log(entry, answer, responseMap[idx]);
+        if(answer == responseMap[idx]) 
+            { 
+                errorMap[idx].value = false;
+                correct+=1; 
+            } 
+        else 
+            { 
+                errorMap[idx].value = true;
+                incorrect+=1;
+            } 
     });
 
     results = {
@@ -47,6 +57,7 @@ const processForm = () => {
     displayResults.value = true;
 }
 
+console.log(questionEntries);
 </script>
 
 <template>
@@ -65,7 +76,7 @@ const processForm = () => {
                     </ul>
                 </div>
                 <!-- Display if wrong -->
-                 <div v-show="errorMap[index].value" :what="errorMap[index]" :this="errorMap[index].value">
+                 <div v-show="errorMap[index].value">
                     WRONG
                  </div>
             </div>

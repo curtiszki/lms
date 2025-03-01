@@ -14,11 +14,13 @@ export default [
         name: 'data',
         component: ()=>import('@/pages/data.vue'),
     },
+    /*
     {
         path: '/statistics',
         name: 'statistics',
         component: ()=>import('@/pages/statistics.vue'),
     },
+    */
     {
         path: '/practice',
         name: 'practice',

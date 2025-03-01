@@ -8,7 +8,8 @@ export enum notificationTypes {
 export enum GenerationTypes {
     FLASHCARD="Flashcards",
     MULTIPLE_CHOICE="Multiple Choice",
-    EXAM="Exam"
+    EXAM="Exam",
+    NONE=""
 }
 
 export enum ResponseTypes {
