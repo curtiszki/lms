@@ -14,8 +14,8 @@ const form = useTemplateRef("form");
 import {type Ref, ref } from 'vue';
 import FlashcardDisplay from './FlashcardDisplay.vue';
 // Can't get it to work using objects... 2 separate
-const responseMap : string[] = new Array<string>(questionEntries.length);
-responseMap.fill('');
+const responseMap : number[] = new Array<number>(questionEntries.length);
+responseMap.fill(0);
 
 const errorMap : Ref<boolean, boolean>[]= [];
 for (let i = 0; i < questionEntries.length; i+=1) {
@@ -30,9 +30,10 @@ const processForm = () => {
 
     let incorrect = 0, correct = 0;
     questionEntries.forEach((entry, idx) => {
-        const answer : string = entry[1]['answer'];
-        console.log(entry, answer, responseMap[idx]);
-        if(answer == responseMap[idx]) 
+        const info = entry[1];
+        const answer : string = info['answer'];
+        const response : string = info['options'][responseMap[idx]];
+        if(answer === response) 
             { 
                 errorMap[idx].value = false;
                 correct+=1; 
@@ -56,8 +57,6 @@ const processForm = () => {
     }
     displayResults.value = true;
 }
-
-console.log(questionEntries);
 </script>
 
 <template>
@@ -69,7 +68,7 @@ console.log(questionEntries);
                     <ul class="flex flex-row gap-y-0 gap-x-8 options justify-evenly items-center my-6">
                         <li v-for="(option, optionIndex) in item[1].options" v-bind:key="optionIndex" class="flex items-center option">
                             <label class="option" :for="`question-${index}-${optionIndex}`">                                    
-                                <input :id="`question-${index}-${optionIndex}`" type="radio" :value=String(option) :name="`question-mcq-${index}-option`" v-model="responseMap[index]" required>
+                                <input :id="`question-${index}-${optionIndex}`" type="radio" :value="optionIndex" :name="`question-mcq-${index}-option`" v-model="responseMap[index]" required>
                                 {{ option }}
                             </label>
                         </li>
