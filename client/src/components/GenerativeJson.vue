@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
 import { GenerationTypes, ProcedureType, ResponseTypes, type ResultsInformation } from './defines/types';
-import {type multipleChoiceSchema, type flashcardSchema} from './defines/responseSchema';
+import {type multipleChoiceSchema} from './defines/responseSchema';
 const props = defineProps<{
     validatedObject: object,
     type: GenerationTypes

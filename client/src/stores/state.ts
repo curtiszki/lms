@@ -3,7 +3,7 @@ import { GenerationTypes} from '@/components/defines/types';
 
 interface State {
     information: null | [string, object][],
-    generationType: GenerationTypes
+    generationType: null | GenerationTypes
 }
 
 // Store for testing information
@@ -11,11 +11,11 @@ export const informationStore = defineStore('information', {
     state: (): State => {
         return {
             information: null,
-            generationType: GenerationTypes.NONE
+            generationType: null
         }
     },
     actions: {
-        setInformation(information : null | [string, object][], generationType : GenerationTypes) {
+        setInformation(information : null | [string, object][], generationType : null | GenerationTypes) {
             this.information = information;
             this.generationType = generationType;
         }

@@ -9,7 +9,7 @@ export enum GenerationTypes {
     FLASHCARD="Flashcards",
     MULTIPLE_CHOICE="Multiple Choice",
     EXAM="Exam",
-    NONE=""
+    //NONE=""
 }
 
 export enum ResponseTypes {
