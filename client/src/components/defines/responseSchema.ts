@@ -10,7 +10,16 @@ export interface multipleChoiceSchema {
     answer: string
 }
 
+export interface LongAnswerSchema {
+    questions: string[],
+}
+
+export interface LongAnswerJSONResponse {
+    feedback: string,
+    score: number
+}
+
 export interface examSchema {
-    flashcards: flashcardSchema,
-    mcq: multipleChoiceSchema
+    long: LongAnswerSchema,
+    multiple: multipleChoiceSchema[]
 }

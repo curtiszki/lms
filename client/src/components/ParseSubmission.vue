@@ -14,6 +14,7 @@
     import { config } from "./defines/config";
 
     import { informationStore } from "@/stores/state";
+import type { examSchema } from "./defines/responseSchema";
     const store = informationStore();
 
     const notificationMsg = ref("");
@@ -55,7 +56,7 @@
 
         let json;
         try {
-            const target = [config.SITE_BASE_URL, 'generate'].join('/');
+            const target = [config.SITE_BASE_URL, 'generate', 'dataset'].join('/');
             const response = await fetch(target, postRequest);
             if (!response.ok) {
                 throw new Error(response.statusText);
@@ -70,6 +71,7 @@
 
         const jsonObj = JSON.parse(json);
 
+        
         let entries = validateJsonObject(generateType,jsonObj);
         if (!entries) {
             notificationMsg.value = 'An error occurred while generating data.';
@@ -81,26 +83,8 @@
         switch (generateType) {
             case GenerationTypes.EXAM:
                 // multiple types
-                const values : string[] = [];
-                entries.forEach((entry) => {
-                    if (Object.keys(entry).length >= 2) {
-                        let subMsg : string;
-                        const type = entry[0];
-                        const l = Object.keys(entry[1] as object).length;
-                        
-                        if (type == 'long') {
-                            subMsg = l + ' long answer questions';
-                        }
-                        else if (type == 'multiple') {
-                            subMsg = l + ' multiple choice questions';
-                        }
-                        else {
-                            subMsg = l + ' questions';
-                        }
-                        values.push(subMsg);
-                    }
-                })
-                msg = `Generated exam containing ${values.join(' and ')}.`
+                const obj = jsonObj as examSchema;
+                msg = `Generated exam containing ${obj.multiple.length} multiple choice questions and ${obj.long.questions.length} long question responses.`
                 break;
             case GenerationTypes.FLASHCARD:
                 msg = `Generated ${entries.length} flashcards.`

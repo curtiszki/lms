@@ -1,6 +1,7 @@
 import Config  from "@/api/config";
 import { sizeLimits } from "@/defines/constants";
-import { GenerationTypes, InformationTypes } from "@/defines/types";
+import { GenerationTypes, InformationTypes, LongAnswerResponse } from "@/defines/types";
+import { generateRouterTypeParams } from "@/routes/generate";
 import { GenerativeModel, GoogleGenerativeAI, GoogleGenerativeAIFetchError} from "@google/generative-ai";
 
 interface DataGenerationInformation {
@@ -8,6 +9,7 @@ interface DataGenerationInformation {
     information: string,
     informationType: InformationTypes,
 }
+
 export default class DataGenerator {
     static #instance: DataGenerator;
     key : string;
@@ -54,6 +56,26 @@ export default class DataGenerator {
         }
     }
 
+    private generateLongAnswer = async (data: LongAnswerResponse[]) : Promise<string | null> => {
+        this.model.generationConfig.responseSchema = Config.LongAnswerResult;
+        const split = Config.DELIMITER.split(' ');
+        for (const item of data) {
+            item.question = this.makeid(10) + split[0] + item.question + split[1] + this.makeid(10) + '\r\n';
+            item.answer = this.makeid(10) + split[0] + item.answer + split[1] + this.makeid(10) + '\r\n';
+        }
+
+        const prompt = Config.contextLongAnswer + '\r\n' + JSON.stringify(data);
+        try {
+            const result = await this.model.generateContent([prompt]);
+            return result.response.text();
+        }
+        catch (e : unknown) {
+            const err = e as GoogleGenerativeAIFetchError;
+            console.log(err.message);
+            return null;
+        }
+    }
+
     public static get getInstance(): DataGenerator {
         if (!DataGenerator.#instance) {
             DataGenerator.#instance = new DataGenerator();
@@ -61,15 +83,40 @@ export default class DataGenerator {
         return DataGenerator.#instance
     }
 
-    public validate(data : DataGenerationInformation) : boolean {
-        if (!data.generationType || !data.information || !data.informationType
-            || (data.information.length > sizeLimits.text) 
-        )
+    public validate(dataObj : object, key: string) : boolean {
+        try {
+            switch (key) {
+                case generateRouterTypeParams.dataset: {
+                    const data = dataObj as DataGenerationInformation;
+                    if (!data.generationType || !data.information || !data.informationType
+                        || (data.information.length > sizeLimits.text) 
+                    )
+                        return false;
+                    break;
+                }
+                case generateRouterTypeParams.long_answer: {
+                    const data = dataObj as LongAnswerResponse[];
+                    if (!data[0].answer || !data[0].question) {
+                        return false;
+                    }
+                    break;
+                }
+                default:
+                    return false;
+            }
+            return true;
+        } catch (e: unknown) {
             return false;
-        return true;
+        }
     }
 
     public async generateInformation(data : DataGenerationInformation) : Promise<string | null> {
         return await this.generatePrompt(data.information, data.informationType, data.generationType);
+    }
+
+
+ 
+    public async generateLongAnswerResponses(data: LongAnswerResponse[]) : Promise<string | null> {
+        return await this.generateLongAnswer(data);
     }
 }

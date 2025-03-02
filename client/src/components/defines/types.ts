@@ -13,8 +13,8 @@ export enum GenerationTypes {
 }
 
 export enum ResponseTypes {
-    MCQ="Multiple Choice",
-    LONG="Long Answer"
+    MCQ="multiple choice",
+    LONG="long answer"
 }
 
 export enum ProcedureType {
@@ -38,8 +38,21 @@ export interface DataGenerationInformation {
     informationType: InformationTypes,
 }
 
+export interface LongAnswerResponse {
+    question: string,
+    answer: string
+}
+
+
+
+export const IncludedResponses = {
+    [GenerationTypes.EXAM] : [ResponseTypes.MCQ, ResponseTypes.LONG],
+    [GenerationTypes.MULTIPLE_CHOICE] : [ResponseTypes.MCQ],
+    [GenerationTypes.FLASHCARD] : []
+}
+
 export interface ResultsInformation {
     type: ProcedureType,
     includes: ResponseTypes[],
-    results: {correct : number, incorrect : number, total: number, percentage: number}
+    results: {correct : Map<string, number>, total: Map<string, number>, percentage: number, summary: [correct: number, total: number]},
 }

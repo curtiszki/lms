@@ -14,3 +14,15 @@ export interface registerJSON {
     'username': string,
     'password': string,
 };
+
+export interface LongAnswerResponse {
+    question: string,
+    answer: string,
+}
+
+export const LongAnswerResponseFormat = '\
+        {\
+            question: string,\
+            answer: string,\
+        }\
+    ';
