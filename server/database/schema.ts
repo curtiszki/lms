@@ -27,14 +27,14 @@ const createUserTable = `
 const createUserData = `
 CREATE TABLE IF NOT EXISTS ${schemaNames.USER_DATA.TABLE_NAME} (
     ${schemaNames.USER_DATA.ID} uuid NOT NULL UNIQUE,
-    ${schemaNames.USER_DATA.PASSWORD} bytea NOT NULL,
+    ${schemaNames.USER_DATA.PASSWORD} text NOT NULL,
     FOREIGN KEY (${schemaNames.USER_DATA.ID}) references ${schemaNames.USER_ACCOUNT.TABLE_NAME}(${schemaNames.USER_ACCOUNT.ID})
 );
 
 CREATE OR REPLACE FUNCTION password_hash() RETURNS trigger AS $$
 BEGIN
     IF tg_op = 'INSERT' THEN
-        NEW.password = digest(NEW.password, 'sha256');
+        NEW.password = encode(digest(NEW.password, 'sha256'), 'hex');
         RETURN NEW;
     END IF;
 END;

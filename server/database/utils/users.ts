@@ -42,15 +42,20 @@ export class DatabaseQuery {
             return DatabaseResult.ERROR;
         }
     }
-    
-    public async retrieveRow(client: Client,  tableName: string, targetColumn: string, value: string, ...retrievedFields: string[]) : Promise<QueryResultRow|DatabaseResult.ERROR>  {
+
+    public async retrieveRow(client: Client,  tableName: string, targetColumn: string, value: string) : Promise<QueryResultRow|DatabaseResult.ERROR>  {
         const query =  
         `   
-            SELECT (${retrievedFields.join(',')}) FROM ${tableName}
+            SELECT * FROM ${tableName}
             WHERE '${value}' IN (${targetColumn})
         `;
         try {
-            return (await client.query(query).then((result) => {
+            return (await client.query({
+                text: query
+            }).then((result) => {
+                if (!result.rows.length) {
+                    return DatabaseResult.ERROR;
+                }
                 const row = result.rows[0];
                 return row;
             }));

@@ -13,7 +13,8 @@ const enum LoginResults {
     PASSWORD_NOT_IDENTICAL,
     USERNAME_TAKEN,
     REGISTRATION_ERROR,
-    SUCCESSFUL_REGISTRATION
+    SUCCESSFUL_REGISTRATION,
+    SERVER_ERROR
 };
 
 // Verification for login input
@@ -35,8 +36,14 @@ const notificationMsg = {
     [LoginResults.NO_ERR] : '',
     [LoginResults.PASSWORD_NOT_IDENTICAL] : 'Passwords do not match.',
     [LoginResults.REGISTRATION_ERROR] : "Something went wrong during registration",
-    [LoginResults.SUCCESSFUL_REGISTRATION] : "Successfully created an account!"
+    [LoginResults.SUCCESSFUL_REGISTRATION] : "Successfully created an account!",
+    [LoginResults.SERVER_ERROR] : "A server error occurred."
 
+}
+
+interface userRequest {
+    username: string,
+    password: string
 }
 
 const register = ref(true);
@@ -68,7 +75,7 @@ const verifyRegister = async () : Promise<void> => {
     loginNotifications.regPasswordError.value = LoginResults.PASSWORD_NO_ERR;
 
     // Make API call to try to register
-    const data = {
+    const data : userRequest = {
         username: registerUsername.value,
         password: registerPassword.value
     }
@@ -85,10 +92,8 @@ const verifyRegister = async () : Promise<void> => {
         const target = [config.SITE_BASE_URL, 'users', 'register'].join('/');
         const response = await fetch(target, postRequest);
         if (response.status != 201) {
-            console.log(response);
             // if username is taken
             if (response.status == 409) {
-                console.log('is 409?');
                 loginNotifications.registerError.value = LoginResults.USERNAME_TAKEN;
                 return;
             }
@@ -112,12 +117,46 @@ const verifyRegister = async () : Promise<void> => {
     }
 }
 
-const verifyLogin = () : void => {
+const verifyLogin = async () : Promise<void> => {
     if (verifyUsername(usernameRef)) {
         loginNotifications.usernameError.value = LoginResults.USERNAME_INVALID_CHARACTER
         return
     }
     loginNotifications.usernameError.value = LoginResults.USERNAME_NO_ERR;
+
+    const request : userRequest = {
+        username : usernameRef.value,
+        password : passwordRef.value
+    };
+    // send request for authorization
+    const postRequest = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body : JSON.stringify(request)
+    };
+
+    const target = [config.SITE_BASE_URL, 'users', 'auth'].join('/');
+    try {
+        const response = await fetch(target, postRequest);
+        if (!response.ok) {
+            if (response.status != 401) {
+                loginNotifications.loginError.value = LoginResults.SERVER_ERROR;
+            }
+            else {
+                loginNotifications.loginError.value = LoginResults.INVALID;
+            }
+        }
+        else {
+            usernameRef.value = '';
+            passwordRef.value = '';
+            loginNotifications.loginError.value = LoginResults.NO_ERR;
+        }
+    } catch(e) {
+        loginNotifications.loginError.value = LoginResults.INVALID;
+    }
+
 }
 </script>
 
@@ -142,7 +181,7 @@ const verifyLogin = () : void => {
                 <input class="input" 
                     id="password" type="password" placeholder="******************" v-model="passwordRef" :maxlength="sizeLimits.password" required aria-required="true">
             </div>
-            <span :v-show="loginNotifications.loginError.value != LoginResults.NO_ERR">{{ notificationMsg[loginNotifications.loginError.value] }}</span>
+            <span class="error-msg" :v-show="loginNotifications.loginError.value != LoginResults.NO_ERR">{{ notificationMsg[loginNotifications.loginError.value] }}</span>
             <div class="flex flex-row gap-y-0 gap-x-8 items-center">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
                     Sign In

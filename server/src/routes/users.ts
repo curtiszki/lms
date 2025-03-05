@@ -8,6 +8,7 @@ import client from "database/db";
 import { schemaNames } from "database/defines/schemaConfig";
 import { DatabaseResult } from "database/defines/types";
 import { QueryResultRow } from "pg";
+import passport from "passport";
 // POST request for registration
 userRouter.post('/users/register', async function(req: Request, res: Response) {
     // Should expect a username and password
@@ -25,7 +26,7 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
         if (queryRes === DatabaseResult.ERROR) {
             throw new Error('Duplicate user');
         }
-        const idRow = await query.retrieveRow(client, schemaNames.USER_ACCOUNT.TABLE_NAME, schemaNames.USER_ACCOUNT.USERNAME, json.username, schemaNames.USER_ACCOUNT.ID);
+        const idRow = await query.retrieveRow(client, schemaNames.USER_ACCOUNT.TABLE_NAME, schemaNames.USER_ACCOUNT.USERNAME, json.username);
         if (idRow == DatabaseResult.ERROR) {
             throw new Error('Error parsing request');
         }
@@ -37,12 +38,25 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
             throw new Error('Unable to update password table.');
         }
 
-        res.status(201).send('Created account');
+        res.sendStatus(201);
         return;
     }
     catch (e) {
         const err = e as Error;
+        console.log("/users/register error");
         res.status(500).send(err.message);
     }
 
 });
+
+// Login POST request
+userRouter.post('/users/auth', 
+    passport.authenticate('local'),
+    (req: Request, res: Response) => {
+        console.log("running the post middleware");
+        res.type('json');
+        res.status(200);
+        //req.session.user = {username: req.body.username}
+        res.send();
+    }
+)
