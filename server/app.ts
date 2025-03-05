@@ -67,7 +67,6 @@ app.use(cors(corsOptions));
 
 const port = process.env.port || 4000;
 
-/*
 declare module 'express-session' {
   interface SessionData {
       user: {
@@ -75,19 +74,9 @@ declare module 'express-session' {
       };
   }
 }
-*/
+
 import routes from "@/routes/index";
 app.use('/', routes);
-// Ensure user is authenticated
-/*
-const authenticationCheck = (req: Request, res: Response, next: NextFunction) => {
-if (!req.user) {
-  res.redirect(401, '/');
-}
-next();
-};
-routes.use(authenticationCheck);
-*/
 
 app.listen(port, () => {
   console.log(`Listening on port: ${port}`);

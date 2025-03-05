@@ -9,23 +9,6 @@ const darkHeroBg = {
     lg: 'images/dark-hero/large.jpg',
     xl: 'images/dark-hero/xl.jpg'
 }
-    /*
-    useHead({
-        title: 'IPJ',
-        meta: [
-           {
-            name: 'name',
-            content: 'content'
-           } 
-        ],
-        link: [
-            {
-                rel: 'stylesheet',
-                href: '/src/assets/main.css',
-            }
-        ]
-    })
-    */
 </script>
 
 <template>

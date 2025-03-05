@@ -25,7 +25,6 @@ export default (database : DatabaseQuery) => {
             }
             done(null, foundUser);
         } catch (error: unknown) {
-            console.log("CAUGHT: ", error);
             done(null, false);
         }
     })

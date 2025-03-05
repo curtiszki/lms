@@ -1,6 +1,5 @@
 <!-- Component that will accept JSON data, and then use that data to render corresponding html output -->
 <script setup lang="ts">
-import { useTemplateRef } from 'vue';
 import { GenerationTypes, IncludedResponses, ProcedureType, ResponseTypes, type LongAnswerResponse, type ResultsInformation } from './defines/types';
 import {type examSchema, type LongAnswerJSONResponse, type multipleChoiceSchema} from './defines/responseSchema';
 const props = defineProps<{
@@ -9,7 +8,6 @@ const props = defineProps<{
 }>()
 
 const questionEntries =  (props.type === GenerationTypes.EXAM) ? Object.entries((props.validatedObject as examSchema).multiple) : Object.entries(props.validatedObject);
-
 import {type Ref, ref } from 'vue';
 import FlashcardDisplay from './FlashcardDisplay.vue';
 import { config } from './defines/config';

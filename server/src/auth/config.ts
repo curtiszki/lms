@@ -8,7 +8,6 @@ import { DatabaseResult } from "database/defines/types";
 const database = new DatabaseQuery();
 export default (passport : passport.PassportStatic) => {
     passport.serializeUser((user, done) => {
-        console.log("SERIALIZE");
         done(null, (user as {
             user_id: string,
             username: string
@@ -16,7 +15,6 @@ export default (passport : passport.PassportStatic) => {
     });
 
     passport.deserializeUser(async (userId : string, done) => {
-        console.log("DESERIALIZE");
         try {
             const foundUser = await database.retrieveRow(client, schemaNames.USER_ACCOUNT.TABLE_NAME, schemaNames.USER_ACCOUNT.ID, userId);
             if (foundUser == DatabaseResult.ERROR) {

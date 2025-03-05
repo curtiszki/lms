@@ -13,9 +13,9 @@
     import { ref } from "vue";
     import { config } from "./defines/config";
 
-    import { informationStore } from "@/stores/state";
-import type { examSchema } from "./defines/responseSchema";
-    const store = informationStore();
+    import { InformationStore } from "@/stores/state";
+    import type { examSchema } from "./defines/responseSchema";
+    const store = InformationStore();
 
     const notificationMsg = ref("");
     const notificationType = ref(notificationTypes.NONE);

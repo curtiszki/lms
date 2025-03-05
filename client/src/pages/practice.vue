@@ -2,8 +2,8 @@
 import GridLayout from '@/layouts/GridLayout.vue';
 import GenerativeJson from '@/components/GenerativeJson.vue';
 
-import { informationStore } from '@/stores/state';
-const store = informationStore();
+import { InformationStore } from '@/stores/state';
+const store = InformationStore();
 </script>
 
 <template>

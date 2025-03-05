@@ -2,6 +2,9 @@
 import { ref, type Ref } from 'vue';
 import { sizeLimits } from './defines/constants';
 import { config } from './defines/config';
+import { UserInformationStore } from '@/stores/user';
+import type { UserDescription } from './defines/types';
+import router from '@/router';
 
 const enum LoginResults {
     USERNAME_NO_ERR,
@@ -153,6 +156,11 @@ const verifyLogin = async () : Promise<void> => {
             passwordRef.value = '';
             loginNotifications.loginError.value = LoginResults.NO_ERR;
         }
+
+        const json = (await response.json()) as UserDescription;
+        const userInformation = UserInformationStore();
+        userInformation.setInformation(json);
+        await router.push({name: 'home'});
     } catch(e) {
         loginNotifications.loginError.value = LoginResults.INVALID;
     }

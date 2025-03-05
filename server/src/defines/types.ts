@@ -26,3 +26,8 @@ export const LongAnswerResponseFormat = '\
             answer: string,\
         }\
     ';
+
+export interface UserDescription {
+    guestStatus: boolean,
+    username: string
+}

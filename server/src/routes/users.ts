@@ -2,7 +2,7 @@ import {Response, Request, Router } from "express";
 
 export const userRouter = Router();
 
-import { registerJSON } from "@/defines/types";
+import { registerJSON, UserDescription } from "@/defines/types";
 import { DatabaseQuery } from "database/utils/users";
 import client from "database/db";
 import { schemaNames } from "database/defines/schemaConfig";
@@ -43,7 +43,6 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
     }
     catch (e) {
         const err = e as Error;
-        console.log("/users/register error");
         res.status(500).send(err.message);
     }
 
@@ -53,10 +52,12 @@ userRouter.post('/users/register', async function(req: Request, res: Response) {
 userRouter.post('/users/auth', 
     passport.authenticate('local'),
     (req: Request, res: Response) => {
-        console.log("running the post middleware");
         res.type('json');
         res.status(200);
-        //req.session.user = {username: req.body.username}
-        res.send();
+        const responseJson : UserDescription = {
+            guestStatus: false,
+            username: req.body.username
+        }
+        res.send(responseJson);
     }
 )

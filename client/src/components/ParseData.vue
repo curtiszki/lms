@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { notificationTypes, inputTypes } from './defines/types';
+import { notificationTypes, inputTypes, FlashcardType, GenerationTypes } from './defines/types';
 import { sizeLimits } from './defines/constants';
-
 const {} = defineProps<{
   accepts: string,
   description: string,
@@ -14,7 +13,10 @@ const notificationMsg = ref("");
 const notificationType = ref(notificationTypes.NONE);
 const emit = defineEmits(['load']);
 
-import {csvParseRows, tsvParseRows} from 'd3';
+import { InformationStore } from '@/stores/state';
+const store = InformationStore();
+
+import Papa from "papaparse"
 
 const verifyFileType = async function (e:Event, type : inputTypes) : Promise<void> {
     const target = e?.target as HTMLInputElement    
@@ -101,29 +103,38 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
         }
     })
     
-    const fileString = (reader.result ? reader.result.toString() : '');
-    let res = null;
-
+    
+    let delimiter;
     switch(extension) {
-        case 'csv': 
-            res = csvParseRows(fileString);
+        case 'csv':
+            delimiter = ','; 
             break;
-        case 'tsv':
-            res = tsvParseRows(fileString);
-            break;
-        default:
-            notificationMsg.value ='Unable to parse datatype';
+            case 'tsv':
+                delimiter = '\t';
+                break;
+                default:
+                    notificationMsg.value ='Unable to parse datatype';
             notificationType.value = notificationTypes.FAILURE;
             return;
-    }
-
+        }
+        
+    const headerRow = [FlashcardType.question, FlashcardType.answer];
+    const fileString = headerRow.join(delimiter) +'\r\n' + (reader.result ? reader.result.toString() : '');
+    const res = Papa.parse(fileString, {
+        delimiter: delimiter,
+        header: true,
+        skipEmptyLines: true,
+        delimitersToGuess: [delimiter]
+    });
     if (!res) {
         notificationMsg.value ="Something went wrong parsing the file";
         notificationType.value = notificationTypes.FAILURE;
         return;
     }
 
-    notificationMsg.value = "Generated dataset of " + res.length + " items";
+    // Ignore the column property
+    store.setInformation(res.data, GenerationTypes.FLASHCARD);
+    notificationMsg.value = "Generated dataset of " + res.data.length + " items";
     notificationType.value = notificationTypes.SUCCESS;
 }
 </script>
@@ -138,6 +149,14 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
             aria-describedby="file_input_help" type="file"
             v-on:change="verifyFileType($event, verifyType)"
             >
-        <div :class="notificationType" class="text-sm italic" :data-notification="notificationType">{{notificationMsg}}</div>
+        <div :class="notificationType" class="text-sm italic justify-center my-5" :data-notification="notificationType" v-if="notificationType === notificationTypes.SUCCESS">
+            <p>
+                {{notificationMsg}}
+            </p>
+            <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly" v-show="notificationType===notificationTypes.SUCCESS">
+                <RouterLink to="practice" class="link" >Try it out?</RouterLink>
+                <RouterLink to="data" class="link">See Data.</RouterLink>
+            </div>
+        </div>
     </div>
 </template>

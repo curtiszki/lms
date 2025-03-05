@@ -43,6 +43,11 @@ export interface LongAnswerResponse {
     answer: string
 }
 
+export const FlashcardType = {
+    question:"question",
+    answer:"answer"
+}
+
 
 
 export const IncludedResponses = {
@@ -55,4 +60,10 @@ export interface ResultsInformation {
     type: ProcedureType,
     includes: ResponseTypes[],
     results: {correct : Map<string, number>, total: Map<string, number>, percentage: number, summary: [correct: number, total: number]},
+}
+
+// expected format for JSON object response for client side
+export interface UserDescription {
+    guestStatus: boolean,
+    username: string
 }
