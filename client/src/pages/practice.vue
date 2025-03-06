@@ -3,7 +3,7 @@ import GridLayout from '@/layouts/GridLayout.vue';
 import GenerativeJson from '@/components/GenerativeJson.vue';
 
 import { InformationStore } from '@/stores/state';
-const store = InformationStore();
+const store = InformationStore;
 </script>
 
 <template>

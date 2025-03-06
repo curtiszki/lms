@@ -19,7 +19,7 @@ let longAnswer : string[];
 let longAnswerRes : [feedback: string, score: number][];
 
 if (props.type === GenerationTypes.EXAM) {
-    const n = (props.validatedObject as examSchema).long.questions.length;
+    const n = (props.validatedObject as examSchema).long.length;
     longAnswer = new Array<string>(n);
     longAnswer.fill('');
     // long Answer Res should have feedback + answer
@@ -90,18 +90,17 @@ const processForm = async () => {
 
     if (props.type === GenerationTypes.EXAM) {
         const longAnswers = (props.validatedObject as examSchema).long;
-
+        console.log("longAnswers: ", longAnswers);
         const responses : LongAnswerResponse[] = [];
-        longAnswers.questions.forEach((question, idx) => {
+        longAnswers.forEach((la, idx) => {
             const response : LongAnswerResponse = {
-                question: question,
+                question: la.question,
                 answer: longAnswer[idx]
             }
             responses.push(response);
         });
 
         // Send prompt and wait for response.
-
         const postRequest = {
             method: 'POST',
             headers: {
@@ -109,15 +108,18 @@ const processForm = async () => {
             },
             body: JSON.stringify(responses),
         }
-
+        
         let json;
         try {
             const target = [config.SITE_BASE_URL, 'generate', 'long_answer'].join('/');
             const response = await fetch(target, postRequest);
+            console.log(postRequest.body);
             if (!response.ok) {
                 throw new Error(response.statusText);
             }
+            console.log("POST REQUEST");
             json = await response.json();
+            console.log("JSON: ", json);
             const responseData = JSON.parse(json) as LongAnswerJSONResponse[];
             let correct_long = 0;
             responseData.forEach((res, idx) => {
@@ -184,8 +186,8 @@ const processForm = async () => {
         <div v-if="type === GenerationTypes.EXAM">
             <!-- Display long answer -->
              <div class="flex flex-col gap-x-0 gap-y-8">
-                <div v-for="(item, index) in (props.validatedObject as examSchema).long.questions" v-bind:key="index">
-                    <p>{{item}}</p>
+                <div v-for="(item, index) in (props.validatedObject as examSchema).long" v-bind:key="index">
+                    <p>{{item.question}}</p>
                     <textarea cols="25" class="w-full bg-amber-500/20" maxlength="2000" v-model="longAnswer[index]" required></textarea>
 
                     <div v-if="displayResults.valueOf()">

@@ -18,6 +18,7 @@ const NavItems = [
             icon: DataIcon,
             link: '/data'
         },
+        /*
         {
             title: 'Stats',
             icon: StatsIcon,
@@ -33,6 +34,7 @@ const NavItems = [
             icon: TestIcon,
             link: '/test'
         }
+        */
     ]
 
 

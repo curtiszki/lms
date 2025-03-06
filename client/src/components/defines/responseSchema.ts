@@ -11,7 +11,7 @@ export interface multipleChoiceSchema {
 }
 
 export interface LongAnswerSchema {
-    questions: string[],
+    question: string,
 }
 
 export interface LongAnswerJSONResponse {
@@ -20,6 +20,6 @@ export interface LongAnswerJSONResponse {
 }
 
 export interface examSchema {
-    long: LongAnswerSchema,
+    long: LongAnswerSchema[],
     multiple: multipleChoiceSchema[]
 }

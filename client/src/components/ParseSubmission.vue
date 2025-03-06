@@ -15,7 +15,7 @@
 
     import { InformationStore } from "@/stores/state";
     import type { examSchema } from "./defines/responseSchema";
-    const store = InformationStore();
+    const store = InformationStore;
 
     const notificationMsg = ref("");
     const notificationType = ref(notificationTypes.NONE);
@@ -84,7 +84,7 @@
             case GenerationTypes.EXAM:
                 // multiple types
                 const obj = jsonObj as examSchema;
-                msg = `Generated exam containing ${obj.multiple.length} multiple choice questions and ${obj.long.questions.length} long question responses.`
+                msg = `Generated exam containing ${obj.multiple.length} multiple choice questions and ${obj.long.length} long question responses.`
                 break;
             case GenerationTypes.FLASHCARD:
                 msg = `Generated ${entries.length} flashcards.`
@@ -129,7 +129,7 @@
             <p>{{notificationMsg}}</p>
             <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly" v-show="notificationType===notificationTypes.SUCCESS">
                 <RouterLink to="practice" class="link" >Try it out?</RouterLink>
-                <RouterLink to="data" class="link">See Data.</RouterLink>
+                <RouterLink to="data/item" class="link">See Data.</RouterLink>
             </div>
         </div>
     </div>

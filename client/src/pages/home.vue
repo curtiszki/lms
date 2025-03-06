@@ -7,7 +7,7 @@
     import { inputTypes } from '@/components/defines/types';
     import { UserInformationStore } from '@/stores/user';
 
-    const userInfo = UserInformationStore();
+    const userInfo = UserInformationStore;
     
     const greetingInformation : { title: string, message: string } = (userInfo.guestStatus) ? {
         title: "Welcome, guest",

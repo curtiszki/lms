@@ -14,9 +14,10 @@ const notificationType = ref(notificationTypes.NONE);
 const emit = defineEmits(['load']);
 
 import { InformationStore } from '@/stores/state';
-const store = InformationStore();
+const store = InformationStore;
 
 import Papa from "papaparse"
+import type { flashcardSchema } from './defines/responseSchema';
 
 const verifyFileType = async function (e:Event, type : inputTypes) : Promise<void> {
     const target = e?.target as HTMLInputElement    
@@ -109,11 +110,11 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
         case 'csv':
             delimiter = ','; 
             break;
-            case 'tsv':
-                delimiter = '\t';
-                break;
-                default:
-                    notificationMsg.value ='Unable to parse datatype';
+        case 'tsv':
+            delimiter = '\t';
+            break;
+        default:
+            notificationMsg.value ='Unable to parse datatype';
             notificationType.value = notificationTypes.FAILURE;
             return;
         }
@@ -133,7 +134,7 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
     }
 
     // Ignore the column property
-    store.setInformation(res.data, GenerationTypes.FLASHCARD);
+    store.setInformation(res.data as flashcardSchema[], GenerationTypes.FLASHCARD);
     notificationMsg.value = "Generated dataset of " + res.data.length + " items";
     notificationType.value = notificationTypes.SUCCESS;
 }
@@ -155,8 +156,18 @@ const verifyDsv = async function(file : File, extension : string) : Promise<void
             </p>
             <div class="flex flex-row gap-y-0 gap-x-3 justify-evenly" v-show="notificationType===notificationTypes.SUCCESS">
                 <RouterLink to="practice" class="link" >Try it out?</RouterLink>
-                <RouterLink to="data" class="link">See Data.</RouterLink>
+                <RouterLink to="data/item" class="link">See Data.</RouterLink>
             </div>
+        </div>
+        <div :data-notification="notificationType" v-else-if="notificationType === notificationTypes.FAILURE">
+            <p class="error error-msg">
+                Unable to process data
+            </p>
+        </div>
+        <div :data-notification="notificationType" v-else-if="notificationType === notificationTypes.WAITING">
+            <p class="msg waiting">
+                Processing data...
+            </p>
         </div>
     </div>
 </template>

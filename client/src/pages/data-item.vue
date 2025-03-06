@@ -1,11 +1,10 @@
 <script setup lang="ts">
     import GridLayout from '@/layouts/GridLayout.vue';
-    import DataDisplay from '@/components/DataDisplay.vue';
+    import DisplayItemGrid from '@/components/DisplayItemGrid.vue';
 </script>
 
 <template>
     <GridLayout>
-        <DataDisplay>
-        </DataDisplay>
+        <DisplayItemGrid></DisplayItemGrid>
     </GridLayout>
 </template>

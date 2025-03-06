@@ -3,16 +3,12 @@ import { createApp } from 'vue'
 
 import App from '@/App.vue'
 import router from '@/router/index'
-import { createPinia } from 'pinia'
-import { UserInformationStore } from './stores/user';
+import { PiniaInstance } from './stores/pinia';
+import PrimeVue from 'primevue/config';
 
 // pinia to save state
-const pinia = createPinia();
 const app = createApp(App);
-
+app.use(PrimeVue);
 app.use(router);
-app.use(pinia);
-// initialize userdata store
-UserInformationStore();
-
+app.use(PiniaInstance);
 app.mount('#app');

@@ -158,7 +158,7 @@ const verifyLogin = async () : Promise<void> => {
         }
 
         const json = (await response.json()) as UserDescription;
-        const userInformation = UserInformationStore();
+        const userInformation = UserInformationStore;
         userInformation.setInformation(json);
         await router.push({name: 'home'});
     } catch(e) {

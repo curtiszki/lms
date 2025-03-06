@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { UserDescription } from '@/components/defines/types';
+import { PiniaInstance } from './pinia';
 
 export const UserInformationStore = defineStore('userInformation', {
     state: (): UserDescription => {
@@ -14,4 +15,4 @@ export const UserInformationStore = defineStore('userInformation', {
             this.username = data.username;
         }
     }
-});
+})(PiniaInstance);

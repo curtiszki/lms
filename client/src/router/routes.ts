@@ -14,6 +14,11 @@ export default [
         name: 'data',
         component: ()=>import('@/pages/data.vue'),
     },
+    {
+        path: '/data/item',
+        name: 'data-item',
+        component: ()=>import('@/pages/data-item.vue'),
+    },
     /*
     {
         path: '/statistics',
@@ -26,11 +31,13 @@ export default [
         name: 'practice',
         component: ()=>import('@/pages/practice.vue'),
     },
+    /*
     {
         path: '/test',
         name: 'test',
         component: ()=>import('@/pages/test.vue'),
     },
+    */
     {
         path: '/:pathMatch(.*)*',
         name: 'not found',
